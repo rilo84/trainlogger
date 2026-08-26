@@ -223,6 +223,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
   const [monthOffset, setMonthOffset] = useState(0)
   const [yearOffset, setYearOffset] = useState(0)
   const [showTable, setShowTable] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const [hoverIndex, setHoverIndex] = useState<number | null>(null)
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
@@ -324,63 +325,105 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                 ›
               </button>
             </div>
-          </div>
-        </div>
-        <div className="chart-toggles">
-          <div className="segmented" role="group" aria-label="Vy">
             <button
               type="button"
-              className={viewMode === 'activity' ? 'active' : ''}
-              onClick={() => {
-                setViewMode('activity')
-                setChartType('bar')
-              }}
+              className="chart-settings-button"
+              onClick={() => setSettingsOpen(true)}
+              aria-label="Diagraminställningar"
             >
-              Aktivitet
-            </button>
-            <button
-              type="button"
-              className={viewMode === 'total' ? 'active' : ''}
-              onClick={() => setViewMode('total')}
-            >
-              Samtliga aktiviteter
-            </button>
-          </div>
-          <div className="segmented" role="group" aria-label="Diagramtyp">
-            <button
-              type="button"
-              className={chartType === 'bar' ? 'active' : ''}
-              onClick={() => setChartType('bar')}
-            >
-              Stapeldiagram
-            </button>
-            <button
-              type="button"
-              className={chartType === 'line' ? 'active' : ''}
-              disabled={viewMode === 'activity'}
-              onClick={() => setChartType('line')}
-            >
-              Linjediagram
-            </button>
-          </div>
-          <div className="segmented" role="group" aria-label="Tidsperiod">
-            <button
-              type="button"
-              className={granularity === 'week' ? 'active' : ''}
-              onClick={() => setGranularity('week')}
-            >
-              Per vecka
-            </button>
-            <button
-              type="button"
-              className={granularity === 'month' ? 'active' : ''}
-              onClick={() => setGranularity('month')}
-            >
-              Per månad
+              ⚙️
             </button>
           </div>
         </div>
       </div>
+
+      {settingsOpen && (
+        <div className="settings-sheet-backdrop" onClick={() => setSettingsOpen(false)}>
+          <div
+            className="settings-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Diagraminställningar"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="settings-sheet-header">
+              <h3>Diagraminställningar</h3>
+              <button
+                type="button"
+                className="btn-icon"
+                onClick={() => setSettingsOpen(false)}
+                aria-label="Stäng"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="settings-sheet-row">
+              <span className="settings-sheet-label">Vy</span>
+              <div className="segmented" role="group" aria-label="Vy">
+                <button
+                  type="button"
+                  className={viewMode === 'activity' ? 'active' : ''}
+                  onClick={() => {
+                    setViewMode('activity')
+                    setChartType('bar')
+                  }}
+                >
+                  Aktivitet
+                </button>
+                <button
+                  type="button"
+                  className={viewMode === 'total' ? 'active' : ''}
+                  onClick={() => setViewMode('total')}
+                >
+                  Samtliga aktiviteter
+                </button>
+              </div>
+            </div>
+
+            <div className="settings-sheet-row">
+              <span className="settings-sheet-label">Diagramtyp</span>
+              <div className="segmented" role="group" aria-label="Diagramtyp">
+                <button
+                  type="button"
+                  className={chartType === 'bar' ? 'active' : ''}
+                  onClick={() => setChartType('bar')}
+                >
+                  Stapeldiagram
+                </button>
+                <button
+                  type="button"
+                  className={chartType === 'line' ? 'active' : ''}
+                  disabled={viewMode === 'activity'}
+                  onClick={() => setChartType('line')}
+                >
+                  Linjediagram
+                </button>
+              </div>
+            </div>
+
+            <div className="settings-sheet-row">
+              <span className="settings-sheet-label">Tidsperiod</span>
+              <div className="segmented" role="group" aria-label="Tidsperiod">
+                <button
+                  type="button"
+                  className={granularity === 'week' ? 'active' : ''}
+                  onClick={() => setGranularity('week')}
+                >
+                  Per vecka
+                </button>
+                <button
+                  type="button"
+                  className={granularity === 'month' ? 'active' : ''}
+                  onClick={() => setGranularity('month')}
+                >
+                  Per månad
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {!showTable && (
         <div className="chart-svg-wrap">
