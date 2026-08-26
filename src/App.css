@@ -470,6 +470,108 @@
   padding: 10px 12px;
 }
 
+.log-activity-button {
+  align-self: flex-start;
+}
+
+.log-activity-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.log-activity-form input {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.log-activity-form input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.wheel-picker-row {
+  display: flex;
+  gap: 12px;
+}
+
+.wheel-picker-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wheel-picker {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.wheel-picker-scroll {
+  height: 100%;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+}
+
+.wheel-picker-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.wheel-picker-item {
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  text-align: center;
+  overflow-wrap: anywhere;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.wheel-picker-item.active {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.wheel-picker-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.wheel-picker-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.wheel-picker-fade-top {
+  top: 0;
+  background: linear-gradient(to bottom, var(--color-bg), transparent);
+}
+
+.wheel-picker-fade-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, var(--color-bg), transparent);
+}
+
 .month-nav button {
   border: none;
   background: transparent;
@@ -545,7 +647,7 @@
 
 .chart-axis-label {
   fill: var(--color-text-muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .chart-hover-band {

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { Activity, Goal } from '../types'
 
@@ -34,10 +34,10 @@ interface ChartPoint {
   activityTotals: Map<string, number>
 }
 
-const WIDTH = 640
+const DEFAULT_WIDTH = 640
+const MIN_WIDTH = 280
 const HEIGHT = 300
-const MARGIN = { top: 16, right: 16, bottom: 32, left: 34 }
-const PLOT_WIDTH = WIDTH - MARGIN.left - MARGIN.right
+const MARGIN = { top: 16, right: 16, bottom: 32, left: 38 }
 const PLOT_HEIGHT = HEIGHT - MARGIN.top - MARGIN.bottom
 
 function getWeekStart(date: Date): Date {
@@ -226,6 +226,22 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [hoverIndex, setHoverIndex] = useState<number | null>(null)
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const [measuredWidth, setMeasuredWidth] = useState(DEFAULT_WIDTH)
+  const svgWrapRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = svgWrapRef.current
+    if (!el) return
+    const observer = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width
+      if (w) setMeasuredWidth(Math.round(w))
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  const width = Math.max(MIN_WIDTH, measuredWidth)
+  const plotWidth = width - MARGIN.left - MARGIN.right
 
   const { series, points, windowLabel } = useMemo(
     () => buildChartData(activities, granularity, monthOffset, yearOffset),
@@ -274,7 +290,9 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
     return MARGIN.top + PLOT_HEIGHT - (value / yMax) * PLOT_HEIGHT
   }
 
-  const bandWidth = points.length > 0 ? PLOT_WIDTH / points.length : PLOT_WIDTH
+  const bandWidth = points.length > 0 ? plotWidth / points.length : plotWidth
+  const longestLabelLength = Math.max(1, ...points.map((p) => p.label.length))
+  const rotateLabels = longestLabelLength * 7 > bandWidth * 0.85
 
   function handlePointerMove(event: ReactPointerEvent<SVGRectElement>, index: number) {
     const container = event.currentTarget.closest('.chart-svg-wrap') as HTMLElement | null
@@ -426,9 +444,9 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
       )}
 
       {!showTable && (
-        <div className="chart-svg-wrap">
+        <div className="chart-svg-wrap" ref={svgWrapRef}>
           <svg
-            viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+            viewBox={`0 0 ${width} ${HEIGHT}`}
             role="img"
             aria-label={`Diagram över loggade timmar per aktivitet, ${granularity === 'week' ? 'per vecka' : 'per månad'}`}
           >
@@ -438,7 +456,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                 <g key={tick}>
                   <line
                     x1={MARGIN.left}
-                    x2={WIDTH - MARGIN.right}
+                    x2={width - MARGIN.right}
                     y1={y}
                     y2={y}
                     className="chart-gridline"
@@ -453,13 +471,15 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
             {points.map((point, index) => {
               const bandX = MARGIN.left + bandWidth * index
               const labelY = MARGIN.top + PLOT_HEIGHT + 18
+              const labelX = bandX + bandWidth / 2
               return (
                 <text
                   key={point.key}
-                  x={bandX + bandWidth / 2}
+                  x={labelX}
                   y={labelY}
                   className="chart-axis-label"
-                  textAnchor="middle"
+                  textAnchor={rotateLabels ? 'end' : 'middle'}
+                  transform={rotateLabels ? `rotate(-40 ${labelX} ${labelY})` : undefined}
                 >
                   {point.label}
                 </text>
@@ -663,7 +683,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                   <line
                     key={goal.id}
                     x1={MARGIN.left}
-                    x2={WIDTH - MARGIN.right}
+                    x2={width - MARGIN.right}
                     y1={y}
                     y2={y}
                     className="chart-goal-line"

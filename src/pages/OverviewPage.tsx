@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import type { Activity, Goal } from '../types'
 import { totalHoursForActivities } from '../utils'
 import { ActivityHoursChart } from '../components/ActivityHoursChart'
 import { ActivityCard } from '../components/ActivityCard'
+import { LogActivityForm } from '../components/LogActivityForm'
 
 interface OverviewPageProps {
   activities: Activity[]
@@ -10,6 +12,7 @@ interface OverviewPageProps {
 }
 
 export function OverviewPage({ activities, goals, onLogHours }: OverviewPageProps) {
+  const [logFormOpen, setLogFormOpen] = useState(false)
   const totalHoursAllTime = totalHoursForActivities(activities)
 
   return (
@@ -24,6 +27,12 @@ export function OverviewPage({ activities, goals, onLogHours }: OverviewPageProp
       </header>
 
       <div className="page-body">
+        {activities.length > 0 && (
+          <button type="button" className="btn btn-primary log-activity-button" onClick={() => setLogFormOpen(true)}>
+            + Logga aktivitet
+          </button>
+        )}
+
         {activities.length > 0 && <ActivityHoursChart activities={activities} goals={goals} />}
 
         {activities.length === 0 ? (
@@ -38,6 +47,10 @@ export function OverviewPage({ activities, goals, onLogHours }: OverviewPageProp
           </div>
         )}
       </div>
+
+      {logFormOpen && (
+        <LogActivityForm activities={activities} onLog={onLogHours} onClose={() => setLogFormOpen(false)} />
+      )}
     </>
   )
 }
