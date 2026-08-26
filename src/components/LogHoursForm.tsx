@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { WheelPicker, buildHourOptions } from './WheelPicker'
 
 interface LogHoursFormProps {
   onLog: (hours: number, date: string) => void
@@ -10,8 +11,10 @@ function todayIso(): string {
   return new Date().toISOString().slice(0, 10)
 }
 
+const HOUR_OPTIONS = buildHourOptions(8, 0.25)
+
 export function LogHoursForm({ onLog, onCancel }: LogHoursFormProps) {
-  const [hours, setHours] = useState('')
+  const [hours, setHours] = useState('1')
   const [date, setDate] = useState(todayIso)
 
   function handleSubmit(e: FormEvent) {
@@ -19,7 +22,6 @@ export function LogHoursForm({ onLog, onCancel }: LogHoursFormProps) {
     const value = parseFloat(hours)
     if (!value || value <= 0 || !date) return
     onLog(value, date)
-    setHours('')
     setDate(todayIso())
   }
 
@@ -32,16 +34,7 @@ export function LogHoursForm({ onLog, onCancel }: LogHoursFormProps) {
         onChange={(e) => setDate(e.target.value)}
         aria-label="Datum"
       />
-      <input
-        type="number"
-        step="0.25"
-        min="0"
-        value={hours}
-        onChange={(e) => setHours(e.target.value)}
-        placeholder="Antal timmar"
-        aria-label="Antal timmar"
-        autoFocus
-      />
+      <WheelPicker options={HOUR_OPTIONS} value={hours} onChange={setHours} ariaLabel="Antal timmar" />
       <div className="log-hours-form-actions">
         <button type="submit" className="btn btn-primary btn-small">
           Logga

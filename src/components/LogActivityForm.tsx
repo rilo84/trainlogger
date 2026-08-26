@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import type { Activity } from '../types'
-import { WheelPicker } from './WheelPicker'
+import { WheelPicker, buildHourOptions } from './WheelPicker'
 import type { WheelPickerOption } from './WheelPicker'
 
 interface LogActivityFormProps {
@@ -44,6 +44,7 @@ export function LogActivityForm({ activities, onLog, onClose }: LogActivityFormP
   const [hours, setHours] = useState('1')
 
   const dateOptions = useMemo(() => buildDateOptions(90), [])
+  const hourOptions = useMemo(() => buildHourOptions(8, 0.25), [])
   const activityOptions: WheelPickerOption[] = activities.map((a) => ({ value: a.id, label: a.name }))
 
   function handleSubmit(e: FormEvent) {
@@ -72,7 +73,7 @@ export function LogActivityForm({ activities, onLog, onClose }: LogActivityFormP
 
         <form className="log-activity-form" onSubmit={handleSubmit}>
           <div className="wheel-picker-row">
-            <div className="wheel-picker-col">
+            <div className="wheel-picker-col wheel-picker-col-wide">
               <span className="settings-sheet-label">Aktivitet</span>
               <WheelPicker
                 options={activityOptions}
@@ -85,18 +86,10 @@ export function LogActivityForm({ activities, onLog, onClose }: LogActivityFormP
               <span className="settings-sheet-label">Datum</span>
               <WheelPicker options={dateOptions} value={date} onChange={setDate} ariaLabel="Datum" />
             </div>
-          </div>
-
-          <div className="settings-sheet-row">
-            <span className="settings-sheet-label">Antal timmar</span>
-            <input
-              type="number"
-              step="0.25"
-              min="0"
-              value={hours}
-              onChange={(e) => setHours(e.target.value)}
-              aria-label="Antal timmar"
-            />
+            <div className="wheel-picker-col">
+              <span className="settings-sheet-label">Timmar</span>
+              <WheelPicker options={hourOptions} value={hours} onChange={setHours} ariaLabel="Antal timmar" />
+            </div>
           </div>
 
           <button type="submit" className="btn btn-primary login-submit">

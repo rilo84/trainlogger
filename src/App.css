@@ -507,6 +507,10 @@
   gap: 8px;
 }
 
+.wheel-picker-col-wide {
+  flex: 1.4;
+}
+
 .wheel-picker {
   position: relative;
   overflow: hidden;
@@ -928,9 +932,8 @@
   min-width: 130px;
 }
 
-.log-hours-form input[type='number'] {
-  flex: 1 1 110px;
-  min-width: 90px;
+.log-hours-form .wheel-picker {
+  flex: 1 1 130px;
 }
 
 .log-hours-form input:focus {

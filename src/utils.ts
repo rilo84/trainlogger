@@ -9,3 +9,7 @@ export function totalHoursForActivities(activities: Activity[]): number {
   const total = activities.reduce((sum, a) => sum + sumHours(a.logs), 0)
   return Math.round(total * 100) / 100
 }
+
+export function formatHours(value: number): string {
+  return Number(value.toFixed(2)).toString()
+}

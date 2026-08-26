@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { Activity, Goal } from '../types'
+import { formatHours } from '../utils'
 
 type ChartType = 'bar' | 'line'
 type Granularity = 'week' | 'month'
@@ -80,10 +81,6 @@ function niceMax(value: number): number {
   const residual = value / magnitude
   const niceResidual = residual <= 1 ? 1 : residual <= 2 ? 2 : residual <= 5 ? 5 : 10
   return niceResidual * magnitude
-}
-
-function formatHours(value: number): string {
-  return Number(value.toFixed(2)).toString()
 }
 
 interface ExpectedBucket {
