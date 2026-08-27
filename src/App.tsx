@@ -14,7 +14,7 @@ const GOALS_STORAGE_KEY = 'claudetrainer.goals'
 const USER_STORAGE_KEY = 'claudetrainer.user'
 const SETTINGS_STORAGE_KEY = 'claudetrainer.settings'
 
-const DEFAULT_SETTINGS: AppSettings = { hourStepMinutes: 15, language: 'sv' }
+const DEFAULT_SETTINGS: AppSettings = { hourStepMinutes: 15, language: 'sv', theme: 'dark' }
 
 function loadActivities(): Activity[] {
   try {
@@ -88,6 +88,13 @@ function App() {
       i18n.changeLanguage(settings.language)
     }
   }, [settings.language])
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = settings.theme
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', settings.theme === 'light' ? '#ffffff' : '#171a21')
+  }, [settings.theme])
 
   function handleAddActivity(name: string) {
     setActivities((prev) => [...prev, { id: createId(), name, logs: [] }])

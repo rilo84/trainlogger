@@ -1,4 +1,5 @@
 :root {
+  /* Dark is the default theme; App.tsx sets data-theme from the user setting. */
   --color-bg: #0f1115;
   --color-surface: #171a21;
   --color-surface-hover: #1e222b;
@@ -15,6 +16,20 @@
 
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --color-bg: #f4f6f9;
+  --color-surface: #ffffff;
+  --color-surface-hover: #eceff4;
+  --color-border: #d7dce4;
+  --color-text: #1b1f27;
+  --color-text-muted: #5b6472;
+  --color-accent: #17a34a;
+  --color-accent-strong: #138a3e;
+  --color-danger: #dc2626;
+
+  color-scheme: light;
 }
 
 * {

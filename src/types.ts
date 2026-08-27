@@ -28,7 +28,10 @@ export interface User {
 
 export type Language = 'sv' | 'en'
 
+export type Theme = 'dark' | 'light'
+
 export interface AppSettings {
   hourStepMinutes: number
   language: Language
+  theme: Theme
 }

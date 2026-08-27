@@ -128,6 +128,9 @@
     "savedConfirm": "Saved ✓",
     "precisionTitle": "Time precision",
     "precisionHint": "How precisely you can pick hours in the wheel pickers when logging",
+    "themeTitle": "Appearance",
+    "themeDark": "Dark",
+    "themeLight": "Light",
     "languageTitle": "Language",
     "swedish": "Svenska",
     "english": "English"

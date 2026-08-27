@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { AppSettings, Language, User } from '../types'
+import type { AppSettings, Language, Theme, User } from '../types'
 
 interface SettingsPageProps {
   user: User
@@ -14,6 +14,10 @@ const STEP_OPTIONS = [1, 5, 10, 15, 30, 60]
 const LANGUAGE_OPTIONS: { value: Language; labelKey: string }[] = [
   { value: 'sv', labelKey: 'settingsPage.swedish' },
   { value: 'en', labelKey: 'settingsPage.english' },
+]
+const THEME_OPTIONS: { value: Theme; labelKey: string }[] = [
+  { value: 'dark', labelKey: 'settingsPage.themeDark' },
+  { value: 'light', labelKey: 'settingsPage.themeLight' },
 ]
 
 export function SettingsPage({ user, settings, onUpdateUser, onUpdateSettings }: SettingsPageProps) {
@@ -73,6 +77,26 @@ export function SettingsPage({ user, settings, onUpdateUser, onUpdateSettings }:
               {saved ? t('settingsPage.savedConfirm') : t('settingsPage.saveProfile')}
             </button>
           </form>
+        </div>
+
+        <div className="chart-card">
+          <div className="chart-controls">
+            <div className="chart-title-group">
+              <h2>{t('settingsPage.themeTitle')}</h2>
+            </div>
+          </div>
+          <div className="activity-picker" role="group" aria-label={t('settingsPage.themeTitle')}>
+            {THEME_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={`activity-picker-chip ${settings.theme === option.value ? 'active' : ''}`}
+                onClick={() => onUpdateSettings({ ...settings, theme: option.value })}
+              >
+                {t(option.labelKey)}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="chart-card">
