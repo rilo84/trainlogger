@@ -28,7 +28,7 @@ export function OverviewPage({ activities, goals, settings, onLogHours, onDelete
 
   return (
     <>
-      <header className="page-header">
+      <header className="page-header page-header-compact">
         <h1>{t('nav.overview')}</h1>
         <p className="page-subtitle">
           {activities.length === 0

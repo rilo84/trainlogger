@@ -319,6 +319,20 @@
   }
 }
 
+.page-header-compact {
+  margin-bottom: 18px;
+}
+
+.page-header-compact h1 {
+  font-size: 1.4rem;
+}
+
+@media (min-width: 768px) {
+  .page-header-compact h1 {
+    font-size: 1.6rem;
+  }
+}
+
 .page-subtitle {
   margin-top: 8px;
   color: var(--color-text-muted);
