@@ -13,6 +13,8 @@ export function TotalGoalsProgress({ activities, goals }: TotalGoalsProgressProp
 
   if (!weekGoal && !monthGoal) return null
 
+  const ringSize = weekGoal && monthGoal ? 130 : 160
+
   return (
     <div className="chart-card">
       <div className="chart-controls">
@@ -27,6 +29,7 @@ export function TotalGoalsProgress({ activities, goals }: TotalGoalsProgressProp
             label="Veckomål"
             actual={currentPeriodActualHours(activities, 'week', null)}
             target={weekGoal.targetHours}
+            size={ringSize}
           />
         )}
         {monthGoal && (
@@ -34,6 +37,7 @@ export function TotalGoalsProgress({ activities, goals }: TotalGoalsProgressProp
             label="Månadsmål"
             actual={currentPeriodActualHours(activities, 'month', null)}
             target={monthGoal.targetHours}
+            size={ringSize}
           />
         )}
       </div>
