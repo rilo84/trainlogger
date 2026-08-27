@@ -14,6 +14,7 @@ interface OverviewPageProps {
   settings: AppSettings
   onLogHours: (activityId: string, hours: number, date: string) => void
   onDeleteLog: (activityId: string, logId: string) => void
+  onNavigateToActivities: () => void
 }
 
 interface LogFormState {
@@ -21,7 +22,14 @@ interface LogFormState {
   activityId?: string
 }
 
-export function OverviewPage({ activities, goals, settings, onLogHours, onDeleteLog }: OverviewPageProps) {
+export function OverviewPage({
+  activities,
+  goals,
+  settings,
+  onLogHours,
+  onDeleteLog,
+  onNavigateToActivities,
+}: OverviewPageProps) {
   const { t } = useTranslation()
   const [logForm, setLogForm] = useState<LogFormState>({ open: false })
   const activityColors = buildActivityColorMap(activities)
@@ -56,7 +64,9 @@ export function OverviewPage({ activities, goals, settings, onLogHours, onDelete
 
         {activities.length === 0 ? (
           <div className="empty-state">
-            <p>{t('overview.emptyHint')}</p>
+            <button type="button" className="btn btn-primary" onClick={onNavigateToActivities}>
+              {t('overview.addActivityButton')}
+            </button>
           </div>
         ) : (
           <div className="activity-grid">

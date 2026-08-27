@@ -38,6 +38,7 @@
     "summary_one": "{{count}} activity · {{hours}} hours total",
     "summary_other": "{{count}} activities · {{hours}} hours total",
     "logActivityButton": "+ Log activity",
+    "addActivityButton": "+ Add activity",
     "emptyHint": "Go to Activities to create your first activity."
   },
   "activities": {

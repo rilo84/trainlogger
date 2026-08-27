@@ -150,6 +150,7 @@ function App() {
           settings={settings}
           onLogHours={handleLogHours}
           onDeleteLog={handleDeleteLog}
+          onNavigateToActivities={() => setActivePage('activities')}
         />
       )}
       {activePage === 'activities' && (

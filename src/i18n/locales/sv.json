@@ -38,6 +38,7 @@
     "summary_one": "{{count}} aktivitet · {{hours}} timmar totalt",
     "summary_other": "{{count}} aktiviteter · {{hours}} timmar totalt",
     "logActivityButton": "+ Logga aktivitet",
+    "addActivityButton": "+ Lägg till aktivitet",
     "emptyHint": "Gå till Aktiviteter för att skapa din första aktivitet."
   },
   "activities": {
