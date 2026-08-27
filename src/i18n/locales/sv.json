@@ -117,6 +117,9 @@
   "totalGoals": {
     "title": "Mål — samtliga aktiviteter"
   },
+  "perActivityGoals": {
+    "title": "Mål — per aktivitet"
+  },
   "settingsPage": {
     "title": "Inställningar",
     "subtitle": "Din profil och appens inställningar",

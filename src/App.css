@@ -580,6 +580,29 @@
   font-size: 0.75rem;
 }
 
+.per-activity-goals-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.per-activity-goals-item {
+  flex: 1 1 calc(33.333% - 14px);
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.per-activity-goals-name {
+  font-weight: 600;
+}
+
 .log-activity-button {
   align-self: flex-start;
 }

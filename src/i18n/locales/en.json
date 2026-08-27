@@ -117,6 +117,9 @@
   "totalGoals": {
     "title": "Goals — all activities"
   },
+  "perActivityGoals": {
+    "title": "Goals — per activity"
+  },
   "settingsPage": {
     "title": "Settings",
     "subtitle": "Your profile and the app's settings",

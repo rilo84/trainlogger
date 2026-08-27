@@ -4,6 +4,7 @@ import type { Activity, AppSettings, Goal } from '../types'
 import { totalHoursForActivities } from '../utils'
 import { ActivityHoursChart } from '../components/ActivityHoursChart'
 import { TotalGoalsProgress } from '../components/TotalGoalsProgress'
+import { PerActivityGoalsProgress } from '../components/PerActivityGoalsProgress'
 import { ActivityCard } from '../components/ActivityCard'
 import { LogActivityForm } from '../components/LogActivityForm'
 
@@ -39,6 +40,8 @@ export function OverviewPage({ activities, goals, settings, onLogHours, onDelete
         )}
 
         {goals.length > 0 && <TotalGoalsProgress activities={activities} goals={goals} />}
+
+        {goals.length > 0 && <PerActivityGoalsProgress activities={activities} goals={goals} />}
 
         {activities.length > 0 && <ActivityHoursChart activities={activities} goals={goals} />}
 
