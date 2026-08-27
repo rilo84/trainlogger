@@ -47,6 +47,27 @@ export function ActivitiesIcon({ size = 22 }: IconProps) {
   )
 }
 
+// A downward arrow into a tray — install / download the app.
+export function DownloadIcon({ size = 20 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 4v10" />
+      <path d="M8 11l4 4 4-4" />
+      <path d="M5 19h14" />
+    </svg>
+  )
+}
+
 // A dartboard — the Goals page.
 export function GoalsIcon({ size = 22 }: IconProps) {
   return (

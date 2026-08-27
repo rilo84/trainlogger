@@ -1,7 +1,8 @@
 import type { ComponentType, ReactNode } from 'react'
 import type { PageId, User } from '../types'
-import { OverviewIcon, ActivitiesIcon, GoalsIcon } from './NavIcons'
+import { OverviewIcon, ActivitiesIcon, GoalsIcon, DownloadIcon } from './NavIcons'
 import { Logo } from './Logo'
+import { useInstallPrompt } from '../hooks/useInstallPrompt'
 
 interface NavItem {
   id: PageId
@@ -24,6 +25,8 @@ interface LayoutProps {
 }
 
 export function Layout({ activePage, onNavigate, user, onLogout, children }: LayoutProps) {
+  const { canInstall, promptInstall } = useInstallPrompt()
+
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -47,9 +50,22 @@ export function Layout({ activePage, onNavigate, user, onLogout, children }: Lay
         </nav>
         <div className="sidebar-user">
           <span className="sidebar-user-name">{user.name}</span>
-          <button type="button" className="sidebar-logout" onClick={onLogout}>
-            Logga ut
-          </button>
+          <div className="sidebar-user-actions">
+            {canInstall && (
+              <button
+                type="button"
+                className="btn-icon"
+                onClick={promptInstall}
+                aria-label="Installera appen"
+                title="Installera appen"
+              >
+                <DownloadIcon size={18} />
+              </button>
+            )}
+            <button type="button" className="sidebar-logout" onClick={onLogout}>
+              Logga ut
+            </button>
+          </div>
         </div>
       </aside>
 
@@ -59,9 +75,22 @@ export function Layout({ activePage, onNavigate, user, onLogout, children }: Lay
             <Logo size={22} />
             <span>Treni</span>
           </span>
-          <button type="button" className="mobile-logout" onClick={onLogout}>
-            Logga ut
-          </button>
+          <div className="mobile-header-actions">
+            {canInstall && (
+              <button
+                type="button"
+                className="btn-icon"
+                onClick={promptInstall}
+                aria-label="Installera appen"
+                title="Installera appen"
+              >
+                <DownloadIcon size={20} />
+              </button>
+            )}
+            <button type="button" className="mobile-logout" onClick={onLogout}>
+              Logga ut
+            </button>
+          </div>
         </header>
 
         <main className="page">{children}</main>
