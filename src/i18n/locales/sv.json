@@ -1,0 +1,132 @@
+{
+  "common": {
+    "add": "Lägg till",
+    "cancel": "Avbryt",
+    "close": "Stäng",
+    "delete": "Ta bort",
+    "save": "Spara",
+    "logout": "Logga ut",
+    "settings": "Inställningar",
+    "install": "Installera appen",
+    "name": "Namn",
+    "email": "E-post",
+    "week": "vecka",
+    "month": "månad",
+    "perWeek": "Per vecka",
+    "perMonth": "Per månad",
+    "weeklyGoal": "Veckomål",
+    "monthlyGoal": "Månadsmål",
+    "of": "av"
+  },
+  "nav": {
+    "overview": "Översikt",
+    "activities": "Aktiviteter",
+    "goals": "Mål"
+  },
+  "login": {
+    "subtitle": "Logga in för att komma till dina aktiviteter",
+    "googleButton": "Logga in med Google",
+    "comingSoon": "Kopplas in senare",
+    "or": "eller",
+    "namePlaceholder": "Ditt namn",
+    "emailPlaceholder": "din@epost.se",
+    "submit": "Logga in",
+    "note": "Tillfällig inloggning — riktig autentisering kopplas in senare."
+  },
+  "overview": {
+    "noActivities": "Inga aktiviteter tillagda än",
+    "summary_one": "{{count}} aktivitet · {{hours}} timmar totalt",
+    "summary_other": "{{count}} aktiviteter · {{hours}} timmar totalt",
+    "logActivityButton": "+ Logga aktivitet",
+    "emptyHint": "Gå till Aktiviteter för att skapa din första aktivitet."
+  },
+  "activities": {
+    "emptyHint": "Skapa din första aktivitet för att börja logga träningstid",
+    "count_one": "{{count}} aktivitet",
+    "count_other": "{{count}} aktiviteter",
+    "emptyList": "Inga aktiviteter än.",
+    "newActivityPlaceholder": "Ny aktivitet, t.ex. Löpning",
+    "nameAria": "Aktivitetsnamn",
+    "deleteAria": "Ta bort {{name}}"
+  },
+  "goals": {
+    "emptyHint": "Sätt upp mål för hur många timmar du vill träna",
+    "count_one": "{{count}} mål satt",
+    "count_other": "{{count}} mål satta",
+    "emptyList": "Inga mål tillagda än.",
+    "allActivities": "Alla aktiviteter",
+    "deletedActivity": "Borttagen aktivitet",
+    "targetPerPeriod": "{{hours}} h / {{period}}",
+    "deleteAria": "Ta bort mål",
+    "periodLabel": "Period",
+    "activityLabel": "Aktivitet",
+    "hoursLabel": "Antal timmar",
+    "submit": "Lägg till mål"
+  },
+  "activityCard": {
+    "totalLabel": "totalt",
+    "deleteLogAria": "Ta bort logg {{date}}, {{hours}} h",
+    "showFewer": "Visa färre",
+    "showAll": "Visa alla ({{count}})",
+    "logHoursButton": "+ Logga tid"
+  },
+  "logHours": {
+    "dateAria": "Datum",
+    "hoursAria": "Antal timmar",
+    "submit": "Logga"
+  },
+  "logActivity": {
+    "title": "Logga aktivitet",
+    "closeAria": "Stäng",
+    "activityLabel": "Aktivitet",
+    "dateLabel": "Datum",
+    "hoursLabel": "Timmar",
+    "submit": "Logga",
+    "today": "Idag",
+    "yesterday": "Igår"
+  },
+  "chart": {
+    "emptyTitle": "Timmar per aktivitet",
+    "emptyHint": "Logga timmar på en aktivitet för att se diagrammet.",
+    "titleTotal": "Totalt antal timmar",
+    "titlePerActivity": "Timmar per aktivitet",
+    "monthLabel": "Månad",
+    "yearLabel": "År",
+    "prevMonthAria": "Föregående månad",
+    "nextMonthAria": "Nästa månad",
+    "prevYearAria": "Föregående år",
+    "nextYearAria": "Nästa år",
+    "settingsAria": "Diagraminställningar",
+    "settingsTitle": "Diagraminställningar",
+    "viewLabel": "Vy",
+    "viewActivity": "Aktivitet",
+    "viewTotal": "Samtliga aktiviteter",
+    "typeLabel": "Diagramtyp",
+    "typeBar": "Stapeldiagram",
+    "typeLine": "Linjediagram",
+    "periodLabel": "Tidsperiod",
+    "ariaChart": "Diagram över loggade timmar per aktivitet, {{period}}",
+    "goalLegendPrefix": "Mål {{name}}",
+    "goalTotalName": "Totalt",
+    "tablePeriodHeader": "Period",
+    "showAsTable": "Visa som tabell",
+    "showAsChart": "Visa som diagram",
+    "weekAbbrev": "v.",
+    "otherSeries": "Övrigt"
+  },
+  "totalGoals": {
+    "title": "Mål — samtliga aktiviteter"
+  },
+  "settingsPage": {
+    "title": "Inställningar",
+    "subtitle": "Din profil och appens inställningar",
+    "profileTitle": "Profil",
+    "saveProfile": "Spara profil",
+    "savedConfirm": "Sparat ✓",
+    "precisionTitle": "Tidsprecision",
+    "precisionHint": "Hur exakt du kan välja timmar i rullhjulen när du loggar",
+    "languageTitle": "Språk",
+    "swedish": "Svenska",
+    "english": "English"
+  }
+}

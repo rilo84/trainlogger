@@ -1,15 +1,20 @@
 import { useEffect, useState } from 'react'
-import type { Activity, Goal, GoalPeriod, PageId, User } from './types'
+import i18n from './i18n/i18n'
+import type { Activity, AppSettings, Goal, GoalPeriod, PageId, User } from './types'
 import { Layout } from './components/Layout'
 import { LoginPage } from './pages/LoginPage'
 import { OverviewPage } from './pages/OverviewPage'
 import { ActivitiesPage } from './pages/ActivitiesPage'
 import { GoalsPage } from './pages/GoalsPage'
+import { SettingsPage } from './pages/SettingsPage'
 import './App.css'
 
 const ACTIVITIES_STORAGE_KEY = 'claudetrainer.activities'
 const GOALS_STORAGE_KEY = 'claudetrainer.goals'
 const USER_STORAGE_KEY = 'claudetrainer.user'
+const SETTINGS_STORAGE_KEY = 'claudetrainer.settings'
+
+const DEFAULT_SETTINGS: AppSettings = { hourStepMinutes: 15, language: 'sv' }
 
 function loadActivities(): Activity[] {
   try {
@@ -38,6 +43,15 @@ function loadUser(): User | null {
   }
 }
 
+function loadSettings(): AppSettings {
+  try {
+    const raw = localStorage.getItem(SETTINGS_STORAGE_KEY)
+    return raw ? { ...DEFAULT_SETTINGS, ...(JSON.parse(raw) as AppSettings) } : DEFAULT_SETTINGS
+  } catch {
+    return DEFAULT_SETTINGS
+  }
+}
+
 function createId() {
   return crypto.randomUUID()
 }
@@ -46,6 +60,7 @@ function App() {
   const [activities, setActivities] = useState<Activity[]>(loadActivities)
   const [goals, setGoals] = useState<Goal[]>(loadGoals)
   const [user, setUser] = useState<User | null>(loadUser)
+  const [settings, setSettings] = useState<AppSettings>(loadSettings)
   const [activePage, setActivePage] = useState<PageId>('overview')
 
   useEffect(() => {
@@ -63,6 +78,16 @@ function App() {
       localStorage.removeItem(USER_STORAGE_KEY)
     }
   }, [user])
+
+  useEffect(() => {
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings))
+  }, [settings])
+
+  useEffect(() => {
+    if (i18n.language !== settings.language) {
+      i18n.changeLanguage(settings.language)
+    }
+  }, [settings.language])
 
   function handleAddActivity(name: string) {
     setActivities((prev) => [...prev, { id: createId(), name, logs: [] }])
@@ -100,11 +125,18 @@ function App() {
   }
 
   return (
-    <Layout activePage={activePage} onNavigate={setActivePage} user={user} onLogout={() => setUser(null)}>
+    <Layout
+      activePage={activePage}
+      onNavigate={setActivePage}
+      user={user}
+      onLogout={() => setUser(null)}
+      onOpenSettings={() => setActivePage('settings')}
+    >
       {activePage === 'overview' && (
         <OverviewPage
           activities={activities}
           goals={goals}
+          settings={settings}
           onLogHours={handleLogHours}
           onDeleteLog={handleDeleteLog}
         />
@@ -113,7 +145,16 @@ function App() {
         <ActivitiesPage activities={activities} onAdd={handleAddActivity} onDelete={handleDeleteActivity} />
       )}
       {activePage === 'goals' && (
-        <GoalsPage activities={activities} goals={goals} onAdd={handleAddGoal} onDelete={handleDeleteGoal} />
+        <GoalsPage
+          activities={activities}
+          goals={goals}
+          settings={settings}
+          onAdd={handleAddGoal}
+          onDelete={handleDeleteGoal}
+        />
+      )}
+      {activePage === 'settings' && (
+        <SettingsPage user={user} settings={settings} onUpdateUser={setUser} onUpdateSettings={setSettings} />
       )}
     </Layout>
   )

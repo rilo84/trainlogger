@@ -10,7 +10,7 @@ export interface Activity {
   logs: LogEntry[]
 }
 
-export type PageId = 'overview' | 'activities' | 'goals'
+export type PageId = 'overview' | 'activities' | 'goals' | 'settings'
 
 export type GoalPeriod = 'week' | 'month'
 
@@ -24,4 +24,11 @@ export interface Goal {
 export interface User {
   name: string
   email: string
+}
+
+export type Language = 'sv' | 'en'
+
+export interface AppSettings {
+  hourStepMinutes: number
+  language: Language
 }

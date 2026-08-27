@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import type { Activity, Goal } from '../types'
+import { useTranslation } from 'react-i18next'
+import type { Activity, AppSettings, Goal } from '../types'
 import { totalHoursForActivities } from '../utils'
 import { ActivityHoursChart } from '../components/ActivityHoursChart'
 import { TotalGoalsProgress } from '../components/TotalGoalsProgress'
@@ -9,29 +10,31 @@ import { LogActivityForm } from '../components/LogActivityForm'
 interface OverviewPageProps {
   activities: Activity[]
   goals: Goal[]
+  settings: AppSettings
   onLogHours: (activityId: string, hours: number, date: string) => void
   onDeleteLog: (activityId: string, logId: string) => void
 }
 
-export function OverviewPage({ activities, goals, onLogHours, onDeleteLog }: OverviewPageProps) {
+export function OverviewPage({ activities, goals, settings, onLogHours, onDeleteLog }: OverviewPageProps) {
+  const { t } = useTranslation()
   const [logFormOpen, setLogFormOpen] = useState(false)
   const totalHoursAllTime = totalHoursForActivities(activities)
 
   return (
     <>
       <header className="page-header">
-        <h1>Översikt</h1>
+        <h1>{t('nav.overview')}</h1>
         <p className="page-subtitle">
           {activities.length === 0
-            ? 'Inga aktiviteter tillagda än'
-            : `${activities.length} aktivitet${activities.length === 1 ? '' : 'er'} · ${totalHoursAllTime} timmar totalt`}
+            ? t('overview.noActivities')
+            : t('overview.summary', { count: activities.length, hours: totalHoursAllTime })}
         </p>
       </header>
 
       <div className="page-body">
         {activities.length > 0 && (
           <button type="button" className="btn btn-primary log-activity-button" onClick={() => setLogFormOpen(true)}>
-            + Logga aktivitet
+            {t('overview.logActivityButton')}
           </button>
         )}
 
@@ -41,7 +44,7 @@ export function OverviewPage({ activities, goals, onLogHours, onDeleteLog }: Ove
 
         {activities.length === 0 ? (
           <div className="empty-state">
-            <p>Gå till Aktiviteter för att skapa din första aktivitet.</p>
+            <p>{t('overview.emptyHint')}</p>
           </div>
         ) : (
           <div className="activity-grid">
@@ -50,6 +53,7 @@ export function OverviewPage({ activities, goals, onLogHours, onDeleteLog }: Ove
                 key={activity.id}
                 activity={activity}
                 goals={goals}
+                stepMinutes={settings.hourStepMinutes}
                 onLogHours={onLogHours}
                 onDeleteLog={onDeleteLog}
               />
@@ -59,7 +63,12 @@ export function OverviewPage({ activities, goals, onLogHours, onDeleteLog }: Ove
       </div>
 
       {logFormOpen && (
-        <LogActivityForm activities={activities} onLog={onLogHours} onClose={() => setLogFormOpen(false)} />
+        <LogActivityForm
+          activities={activities}
+          stepMinutes={settings.hourStepMinutes}
+          onLog={onLogHours}
+          onClose={() => setLogFormOpen(false)}
+        />
       )}
     </>
   )

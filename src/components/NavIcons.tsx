@@ -68,6 +68,26 @@ export function DownloadIcon({ size = 20 }: IconProps) {
   )
 }
 
+// A simple person silhouette — user settings.
+export function UserIcon({ size = 20 }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="8" r="3.4" />
+      <path d="M4.8 20c1.2-4.2 4.1-6.4 7.2-6.4s6 2.2 7.2 6.4" />
+    </svg>
+  )
+}
+
 // A dartboard — the Goals page.
 export function GoalsIcon({ size = 22 }: IconProps) {
   return (

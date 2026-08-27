@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface AddActivityFormProps {
   onAdd: (name: string) => void
 }
 
 export function AddActivityForm({ onAdd }: AddActivityFormProps) {
+  const { t } = useTranslation()
   const [name, setName] = useState('')
 
   function handleSubmit(e: FormEvent) {
@@ -22,11 +24,11 @@ export function AddActivityForm({ onAdd }: AddActivityFormProps) {
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="Ny aktivitet, t.ex. Löpning"
-        aria-label="Aktivitetsnamn"
+        placeholder={t('activities.newActivityPlaceholder')}
+        aria-label={t('activities.nameAria')}
       />
       <button type="submit" className="btn btn-primary">
-        Lägg till
+        {t('common.add')}
       </button>
     </form>
   )

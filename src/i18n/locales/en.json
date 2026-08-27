@@ -1,0 +1,132 @@
+{
+  "common": {
+    "add": "Add",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "save": "Save",
+    "logout": "Log out",
+    "settings": "Settings",
+    "install": "Install app",
+    "name": "Name",
+    "email": "Email",
+    "week": "week",
+    "month": "month",
+    "perWeek": "Weekly",
+    "perMonth": "Monthly",
+    "weeklyGoal": "Weekly goal",
+    "monthlyGoal": "Monthly goal",
+    "of": "of"
+  },
+  "nav": {
+    "overview": "Overview",
+    "activities": "Activities",
+    "goals": "Goals"
+  },
+  "login": {
+    "subtitle": "Log in to get to your activities",
+    "googleButton": "Sign in with Google",
+    "comingSoon": "Coming soon",
+    "or": "or",
+    "namePlaceholder": "Your name",
+    "emailPlaceholder": "you@email.com",
+    "submit": "Log in",
+    "note": "Temporary login — real authentication is coming later."
+  },
+  "overview": {
+    "noActivities": "No activities added yet",
+    "summary_one": "{{count}} activity · {{hours}} hours total",
+    "summary_other": "{{count}} activities · {{hours}} hours total",
+    "logActivityButton": "+ Log activity",
+    "emptyHint": "Go to Activities to create your first activity."
+  },
+  "activities": {
+    "emptyHint": "Create your first activity to start logging training time",
+    "count_one": "{{count}} activity",
+    "count_other": "{{count}} activities",
+    "emptyList": "No activities yet.",
+    "newActivityPlaceholder": "New activity, e.g. Running",
+    "nameAria": "Activity name",
+    "deleteAria": "Delete {{name}}"
+  },
+  "goals": {
+    "emptyHint": "Set goals for how many hours you want to train",
+    "count_one": "{{count}} goal set",
+    "count_other": "{{count}} goals set",
+    "emptyList": "No goals added yet.",
+    "allActivities": "All activities",
+    "deletedActivity": "Deleted activity",
+    "targetPerPeriod": "{{hours}} h / {{period}}",
+    "deleteAria": "Delete goal",
+    "periodLabel": "Period",
+    "activityLabel": "Activity",
+    "hoursLabel": "Number of hours",
+    "submit": "Add goal"
+  },
+  "activityCard": {
+    "totalLabel": "total",
+    "deleteLogAria": "Delete log {{date}}, {{hours}} h",
+    "showFewer": "Show fewer",
+    "showAll": "Show all ({{count}})",
+    "logHoursButton": "+ Log time"
+  },
+  "logHours": {
+    "dateAria": "Date",
+    "hoursAria": "Number of hours",
+    "submit": "Log"
+  },
+  "logActivity": {
+    "title": "Log activity",
+    "closeAria": "Close",
+    "activityLabel": "Activity",
+    "dateLabel": "Date",
+    "hoursLabel": "Hours",
+    "submit": "Log",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "chart": {
+    "emptyTitle": "Hours per activity",
+    "emptyHint": "Log hours on an activity to see the chart.",
+    "titleTotal": "Total hours",
+    "titlePerActivity": "Hours per activity",
+    "monthLabel": "Month",
+    "yearLabel": "Year",
+    "prevMonthAria": "Previous month",
+    "nextMonthAria": "Next month",
+    "prevYearAria": "Previous year",
+    "nextYearAria": "Next year",
+    "settingsAria": "Chart settings",
+    "settingsTitle": "Chart settings",
+    "viewLabel": "View",
+    "viewActivity": "Activity",
+    "viewTotal": "All activities",
+    "typeLabel": "Chart type",
+    "typeBar": "Bar chart",
+    "typeLine": "Line chart",
+    "periodLabel": "Time period",
+    "ariaChart": "Chart of logged hours per activity, {{period}}",
+    "goalLegendPrefix": "Goal {{name}}",
+    "goalTotalName": "Total",
+    "tablePeriodHeader": "Period",
+    "showAsTable": "Show as table",
+    "showAsChart": "Show as chart",
+    "weekAbbrev": "w",
+    "otherSeries": "Other"
+  },
+  "totalGoals": {
+    "title": "Goals — all activities"
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "subtitle": "Your profile and the app's settings",
+    "profileTitle": "Profile",
+    "saveProfile": "Save profile",
+    "savedConfirm": "Saved ✓",
+    "precisionTitle": "Time precision",
+    "precisionHint": "How precisely you can pick hours in the wheel pickers when logging",
+    "languageTitle": "Language",
+    "swedish": "Svenska",
+    "english": "English"
+  }
+}

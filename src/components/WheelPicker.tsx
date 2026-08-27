@@ -20,6 +20,45 @@ export function buildHourOptions(maxHours = 8, step = 0.25): WheelPickerOption[]
   return options
 }
 
+export function todayIso(): string {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function formatDateOptionLabel(
+  date: Date,
+  todayDateIso: string,
+  locale: string,
+  todayLabel: string,
+  yesterdayLabel: string,
+): string {
+  const iso = date.toISOString().slice(0, 10)
+  if (iso === todayDateIso) return todayLabel
+
+  const diffDays = Math.round((new Date(todayDateIso).getTime() - date.getTime()) / 86400000)
+  if (diffDays === 1) return yesterdayLabel
+
+  const weekday = date.toLocaleDateString(locale, { weekday: 'short' }).replace('.', '')
+  const month = date.toLocaleDateString(locale, { month: 'short' }).replace('.', '')
+  return `${weekday} ${date.getDate()} ${month}`
+}
+
+export function buildDateOptions(
+  daysBack: number,
+  locale: string,
+  todayLabel: string,
+  yesterdayLabel: string,
+): WheelPickerOption[] {
+  const today = todayIso()
+  const options: WheelPickerOption[] = []
+  for (let i = 0; i < daysBack; i++) {
+    const date = new Date()
+    date.setDate(date.getDate() - i)
+    const iso = date.toISOString().slice(0, 10)
+    options.push({ value: iso, label: formatDateOptionLabel(date, today, locale, todayLabel, yesterdayLabel) })
+  }
+  return options
+}
+
 interface WheelPickerProps {
   options: WheelPickerOption[]
   value: string

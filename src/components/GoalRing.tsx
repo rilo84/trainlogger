@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { formatHours } from '../utils'
 
 interface GoalRingProps {
@@ -8,6 +9,7 @@ interface GoalRingProps {
 }
 
 export function GoalRing({ label, actual, target, size = 160 }: GoalRingProps) {
+  const { t } = useTranslation()
   const stroke = Math.round(size * 0.1)
   const radius = (size - stroke) / 2
   const circumference = 2 * Math.PI * radius
@@ -25,7 +27,7 @@ export function GoalRing({ label, actual, target, size = 160 }: GoalRingProps) {
         height={size}
         viewBox={`0 0 ${size} ${size}`}
         role="img"
-        aria-label={`${label}: ${percent}% (${formatHours(actual)} av ${formatHours(target)} h)`}
+        aria-label={`${label}: ${percent}% (${formatHours(actual)} ${t('common.of')} ${formatHours(target)} h)`}
       >
         <circle
           cx={size / 2}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { Activity } from '../types'
 import { AddActivityForm } from '../components/AddActivityForm'
 
@@ -8,14 +9,16 @@ interface ActivitiesPageProps {
 }
 
 export function ActivitiesPage({ activities, onAdd, onDelete }: ActivitiesPageProps) {
+  const { t } = useTranslation()
+
   return (
     <>
       <header className="page-header">
-        <h1>Aktiviteter</h1>
+        <h1>{t('nav.activities')}</h1>
         <p className="page-subtitle">
           {activities.length === 0
-            ? 'Skapa din första aktivitet för att börja logga träningstid'
-            : `${activities.length} aktivitet${activities.length === 1 ? '' : 'er'}`}
+            ? t('activities.emptyHint')
+            : t('activities.count', { count: activities.length })}
         </p>
       </header>
 
@@ -24,7 +27,7 @@ export function ActivitiesPage({ activities, onAdd, onDelete }: ActivitiesPagePr
 
         {activities.length === 0 ? (
           <div className="empty-state">
-            <p>Inga aktiviteter än.</p>
+            <p>{t('activities.emptyList')}</p>
           </div>
         ) : (
           <div className="list">
@@ -33,7 +36,7 @@ export function ActivitiesPage({ activities, onAdd, onDelete }: ActivitiesPagePr
                 <span className="list-row-title">{activity.name}</span>
                 <button
                   className="btn-icon"
-                  aria-label={`Ta bort ${activity.name}`}
+                  aria-label={t('activities.deleteAria', { name: activity.name })}
                   onClick={() => onDelete(activity.id)}
                 >
                   ×

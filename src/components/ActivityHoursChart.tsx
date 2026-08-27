@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
 import { formatHours, getWeekStart, getMonthStart } from '../utils'
 
@@ -42,7 +43,7 @@ const MARGIN = { top: 16, right: 16, bottom: 32, left: 38 }
 const PLOT_HEIGHT = HEIGHT - MARGIN.top - MARGIN.bottom
 
 // ISO 8601 week number: the week containing the year's first Thursday is week 1.
-function getISOWeekLabel(date: Date): string {
+function getISOWeekLabel(date: Date, weekAbbrev: string): string {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
   const dayNum = (d.getUTCDay() + 6) % 7
   d.setUTCDate(d.getUTCDate() - dayNum + 3)
@@ -50,16 +51,16 @@ function getISOWeekLabel(date: Date): string {
   const firstDayNum = (firstThursday.getUTCDay() + 6) % 7
   firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3)
   const week = 1 + Math.round((d.getTime() - firstThursday.getTime()) / (7 * 86400000))
-  return `v.${week}`
+  return `${weekAbbrev}${week}`
 }
 
-function getMonthLabel(date: Date): string {
-  const raw = date.toLocaleDateString('sv-SE', { month: 'short' }).replace('.', '')
+function getMonthLabel(date: Date, locale: string): string {
+  const raw = date.toLocaleDateString(locale, { month: 'short' }).replace('.', '')
   return raw.charAt(0).toUpperCase() + raw.slice(1)
 }
 
-function getFullMonthYearLabel(date: Date): string {
-  const raw = date.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })
+function getFullMonthYearLabel(date: Date, locale: string): string {
+  const raw = date.toLocaleDateString(locale, { month: 'long', year: 'numeric' })
   return raw.charAt(0).toUpperCase() + raw.slice(1)
 }
 
@@ -101,6 +102,9 @@ function buildChartData(
   granularity: Granularity,
   monthOffset: number,
   yearOffset: number,
+  locale: string,
+  weekAbbrev: string,
+  otherLabel: string,
 ): { series: Series[]; points: ChartPoint[]; windowLabel: string } {
   const bucketMap = new Map<string, { start: Date; totals: Map<string, number> }>()
 
@@ -121,7 +125,7 @@ function buildChartData(
   if (granularity === 'week') {
     const refMonth = new Date(now.getFullYear(), now.getMonth() + monthOffset, 1)
     expected = getWeekBucketsForMonth(refMonth)
-    windowLabel = getFullMonthYearLabel(refMonth)
+    windowLabel = getFullMonthYearLabel(refMonth, locale)
   } else {
     const year = now.getFullYear() + yearOffset
     expected = getMonthBucketsForYear(year)
@@ -148,7 +152,7 @@ function buildChartData(
     const head = rankedIds.slice(0, MAX_SERIES - 1)
     otherIds = rankedIds.slice(MAX_SERIES - 1)
     series = head.map((id, i) => ({ id, label: nameById.get(id) ?? '', color: SERIES_COLORS[i] }))
-    series.push({ id: '__other__', label: 'Övrigt', color: OTHER_COLOR })
+    series.push({ id: '__other__', label: otherLabel, color: OTHER_COLOR })
   }
 
   const points: ChartPoint[] = expected.map(({ key, start }) => {
@@ -158,7 +162,7 @@ function buildChartData(
         ? otherIds.reduce((sum, id) => sum + (totals.get(id) ?? 0), 0)
         : (totals.get(s.id) ?? 0),
     )
-    const label = granularity === 'week' ? getISOWeekLabel(start) : getMonthLabel(start)
+    const label = granularity === 'week' ? getISOWeekLabel(start, weekAbbrev) : getMonthLabel(start, locale)
     return {
       key,
       label,
@@ -192,8 +196,8 @@ function goalBaseColor(goal: Goal, series: Series[]): string {
   return series.find((s) => s.id === goal.activityId)?.color ?? OTHER_COLOR
 }
 
-function goalActivityLabel(goal: Goal, nameById: Map<string, string>): string {
-  return goal.activityId === null ? 'Totalt' : (nameById.get(goal.activityId) ?? '')
+function goalActivityLabel(goal: Goal, nameById: Map<string, string>, totalLabel: string): string {
+  return goal.activityId === null ? totalLabel : (nameById.get(goal.activityId) ?? '')
 }
 
 interface ActivityHoursChartProps {
@@ -202,6 +206,8 @@ interface ActivityHoursChartProps {
 }
 
 export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProps) {
+  const { t, i18n } = useTranslation()
+  const locale = i18n.language === 'en' ? 'en-US' : 'sv-SE'
   const [chartType, setChartType] = useState<ChartType>('bar')
   const [granularity, setGranularity] = useState<Granularity>('week')
   const [viewMode, setViewMode] = useState<ViewMode>('total')
@@ -229,8 +235,17 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
   const plotWidth = width - MARGIN.left - MARGIN.right
 
   const { series, points, windowLabel } = useMemo(
-    () => buildChartData(activities, granularity, monthOffset, yearOffset),
-    [activities, granularity, monthOffset, yearOffset],
+    () =>
+      buildChartData(
+        activities,
+        granularity,
+        monthOffset,
+        yearOffset,
+        locale,
+        t('chart.weekAbbrev'),
+        t('chart.otherSeries'),
+      ),
+    [activities, granularity, monthOffset, yearOffset, locale, t],
   )
 
   const hasAnyLogs = activities.some((a) => a.logs.length > 0)
@@ -291,10 +306,10 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
     return (
       <div className="chart-card">
         <div className="chart-controls">
-          <h2>Timmar per aktivitet</h2>
+          <h2>{t('chart.emptyTitle')}</h2>
         </div>
         <div className="empty-state">
-          <p>Logga timmar på en aktivitet för att se diagrammet.</p>
+          <p>{t('chart.emptyHint')}</p>
         </div>
       </div>
     )
@@ -307,14 +322,16 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
     <div className="chart-card">
       <div className="chart-controls">
         <div className="chart-title-group">
-          <h2>{viewMode === 'total' ? 'Totalt antal timmar' : 'Timmar per aktivitet'}</h2>
+          <h2>{viewMode === 'total' ? t('chart.titleTotal') : t('chart.titlePerActivity')}</h2>
           <div className="chart-period-nav">
-            <span className="chart-period-nav-label">{granularity === 'week' ? 'Månad' : 'År'}</span>
+            <span className="chart-period-nav-label">
+              {granularity === 'week' ? t('chart.monthLabel') : t('chart.yearLabel')}
+            </span>
             <div className="month-nav">
               <button
                 type="button"
                 onClick={granularity === 'week' ? goToPrevMonth : goToPrevYear}
-                aria-label={granularity === 'week' ? 'Föregående månad' : 'Föregående år'}
+                aria-label={granularity === 'week' ? t('chart.prevMonthAria') : t('chart.prevYearAria')}
               >
                 ‹
               </button>
@@ -323,7 +340,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                 type="button"
                 onClick={granularity === 'week' ? goToNextMonth : goToNextYear}
                 disabled={granularity === 'week' ? monthOffset >= 0 : yearOffset >= 0}
-                aria-label={granularity === 'week' ? 'Nästa månad' : 'Nästa år'}
+                aria-label={granularity === 'week' ? t('chart.nextMonthAria') : t('chart.nextYearAria')}
               >
                 ›
               </button>
@@ -332,7 +349,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
               type="button"
               className="chart-settings-button"
               onClick={() => setSettingsOpen(true)}
-              aria-label="Diagraminställningar"
+              aria-label={t('chart.settingsAria')}
             >
               ⚙️
             </button>
@@ -346,24 +363,24 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
             className="settings-sheet"
             role="dialog"
             aria-modal="true"
-            aria-label="Diagraminställningar"
+            aria-label={t('chart.settingsTitle')}
             onClick={(e) => e.stopPropagation()}
           >
             <div className="settings-sheet-header">
-              <h3>Diagraminställningar</h3>
+              <h3>{t('chart.settingsTitle')}</h3>
               <button
                 type="button"
                 className="btn-icon"
                 onClick={() => setSettingsOpen(false)}
-                aria-label="Stäng"
+                aria-label={t('common.close')}
               >
                 ×
               </button>
             </div>
 
             <div className="settings-sheet-row">
-              <span className="settings-sheet-label">Vy</span>
-              <div className="segmented" role="group" aria-label="Vy">
+              <span className="settings-sheet-label">{t('chart.viewLabel')}</span>
+              <div className="segmented" role="group" aria-label={t('chart.viewLabel')}>
                 <button
                   type="button"
                   className={viewMode === 'activity' ? 'active' : ''}
@@ -372,27 +389,27 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                     setChartType('bar')
                   }}
                 >
-                  Aktivitet
+                  {t('chart.viewActivity')}
                 </button>
                 <button
                   type="button"
                   className={viewMode === 'total' ? 'active' : ''}
                   onClick={() => setViewMode('total')}
                 >
-                  Samtliga aktiviteter
+                  {t('chart.viewTotal')}
                 </button>
               </div>
             </div>
 
             <div className="settings-sheet-row">
-              <span className="settings-sheet-label">Diagramtyp</span>
-              <div className="segmented" role="group" aria-label="Diagramtyp">
+              <span className="settings-sheet-label">{t('chart.typeLabel')}</span>
+              <div className="segmented" role="group" aria-label={t('chart.typeLabel')}>
                 <button
                   type="button"
                   className={chartType === 'bar' ? 'active' : ''}
                   onClick={() => setChartType('bar')}
                 >
-                  Stapeldiagram
+                  {t('chart.typeBar')}
                 </button>
                 <button
                   type="button"
@@ -400,27 +417,27 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                   disabled={viewMode === 'activity'}
                   onClick={() => setChartType('line')}
                 >
-                  Linjediagram
+                  {t('chart.typeLine')}
                 </button>
               </div>
             </div>
 
             <div className="settings-sheet-row">
-              <span className="settings-sheet-label">Tidsperiod</span>
-              <div className="segmented" role="group" aria-label="Tidsperiod">
+              <span className="settings-sheet-label">{t('chart.periodLabel')}</span>
+              <div className="segmented" role="group" aria-label={t('chart.periodLabel')}>
                 <button
                   type="button"
                   className={granularity === 'week' ? 'active' : ''}
                   onClick={() => setGranularity('week')}
                 >
-                  Per vecka
+                  {t('common.perWeek')}
                 </button>
                 <button
                   type="button"
                   className={granularity === 'month' ? 'active' : ''}
                   onClick={() => setGranularity('month')}
                 >
-                  Per månad
+                  {t('common.perMonth')}
                 </button>
               </div>
             </div>
@@ -433,7 +450,9 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
           <svg
             viewBox={`0 0 ${width} ${HEIGHT}`}
             role="img"
-            aria-label={`Diagram över loggade timmar per aktivitet, ${granularity === 'week' ? 'per vecka' : 'per månad'}`}
+            aria-label={t('chart.ariaChart', {
+              period: granularity === 'week' ? t('common.perWeek') : t('common.perMonth'),
+            })}
           >
             {ticks.map((tick) => {
               const y = yScale(tick)
@@ -743,7 +762,11 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                   <line x1="8.5" y1="4" x2="13.5" y2="4" stroke={color} strokeWidth="2" />
                   <line x1="17" y1="4" x2="22" y2="4" stroke={color} strokeWidth="2" />
                 </svg>
-                <span>Mål {goalActivityLabel(goal, nameById)}</span>
+                <span>
+                  {t('chart.goalLegendPrefix', {
+                    name: goalActivityLabel(goal, nameById, t('chart.goalTotalName')),
+                  })}
+                </span>
               </div>
             )
           })}
@@ -755,7 +778,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
           <table className="chart-table">
             <thead>
               <tr>
-                <th>Period</th>
+                <th>{t('chart.tablePeriodHeader')}</th>
                 {series.map((s) => (
                   <th key={s.id}>{s.label}</th>
                 ))}
@@ -776,7 +799,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
       )}
 
       <button type="button" className="chart-table-toggle" onClick={() => setShowTable((v) => !v)}>
-        {showTable ? 'Visa som diagram' : 'Visa som tabell'}
+        {showTable ? t('chart.showAsChart') : t('chart.showAsTable')}
       </button>
     </div>
   )

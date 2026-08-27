@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
 import { sumHours, currentPeriodActualHours, formatHoursMinutes } from '../utils'
 import { LogHoursForm } from './LogHoursForm'
@@ -9,11 +10,13 @@ const COLLAPSED_LOG_COUNT = 3
 interface ActivityCardProps {
   activity: Activity
   goals: Goal[]
+  stepMinutes: number
   onLogHours: (activityId: string, hours: number, date: string) => void
   onDeleteLog: (activityId: string, logId: string) => void
 }
 
-export function ActivityCard({ activity, goals, onLogHours, onDeleteLog }: ActivityCardProps) {
+export function ActivityCard({ activity, goals, stepMinutes, onLogHours, onDeleteLog }: ActivityCardProps) {
+  const { t } = useTranslation()
   const [isLogging, setIsLogging] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -33,14 +36,14 @@ export function ActivityCard({ activity, goals, onLogHours, onDeleteLog }: Activ
 
       <div className="activity-total">
         <span className="activity-total-value">{formatHoursMinutes(totalHours)}</span>
-        <span className="activity-total-label">totalt</span>
+        <span className="activity-total-label">{t('activityCard.totalLabel')}</span>
       </div>
 
       {(weekGoal || monthGoal) && (
         <div className="goal-rings-row goal-rings-row-small">
           {weekGoal && (
             <GoalRing
-              label="Veckomål"
+              label={t('common.weeklyGoal')}
               actual={currentPeriodActualHours([activity], 'week', activity.id)}
               target={weekGoal.targetHours}
               size={88}
@@ -48,7 +51,7 @@ export function ActivityCard({ activity, goals, onLogHours, onDeleteLog }: Activ
           )}
           {monthGoal && (
             <GoalRing
-              label="Månadsmål"
+              label={t('common.monthlyGoal')}
               actual={currentPeriodActualHours([activity], 'month', activity.id)}
               target={monthGoal.targetHours}
               size={88}
@@ -68,7 +71,7 @@ export function ActivityCard({ activity, goals, onLogHours, onDeleteLog }: Activ
               <button
                 type="button"
                 className="btn-icon"
-                aria-label={`Ta bort logg ${log.date}, ${log.hours} h`}
+                aria-label={t('activityCard.deleteLogAria', { date: log.date, hours: log.hours })}
                 onClick={() => onDeleteLog(activity.id, log.id)}
               >
                 ×
@@ -80,12 +83,13 @@ export function ActivityCard({ activity, goals, onLogHours, onDeleteLog }: Activ
 
       {hasMoreLogs && (
         <button type="button" className="activity-log-toggle" onClick={() => setIsExpanded((v) => !v)}>
-          {isExpanded ? 'Visa färre' : `Visa alla (${sortedLogs.length})`}
+          {isExpanded ? t('activityCard.showFewer') : t('activityCard.showAll', { count: sortedLogs.length })}
         </button>
       )}
 
       {isLogging ? (
         <LogHoursForm
+          stepMinutes={stepMinutes}
           onLog={(hours, date) => {
             onLogHours(activity.id, hours, date)
             setIsLogging(false)
@@ -94,7 +98,7 @@ export function ActivityCard({ activity, goals, onLogHours, onDeleteLog }: Activ
         />
       ) : (
         <button className="btn btn-secondary" onClick={() => setIsLogging(true)}>
-          + Logga timmar
+          {t('activityCard.logHoursButton')}
         </button>
       )}
     </div>

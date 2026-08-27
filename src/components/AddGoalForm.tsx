@@ -1,17 +1,20 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Activity, GoalPeriod } from '../types'
 import { WheelPicker, buildHourOptions } from './WheelPicker'
 
 interface AddGoalFormProps {
   activities: Activity[]
+  stepMinutes: number
   onAdd: (goal: { activityId: string | null; period: GoalPeriod; targetHours: number }) => void
 }
 
 const TOTAL_VALUE = '__total__'
-const HOUR_OPTIONS = buildHourOptions(40, 0.25)
 
-export function AddGoalForm({ activities, onAdd }: AddGoalFormProps) {
+export function AddGoalForm({ activities, stepMinutes, onAdd }: AddGoalFormProps) {
+  const { t } = useTranslation()
+  const hourOptions = useMemo(() => buildHourOptions(40, stepMinutes / 60), [stepMinutes])
   const [period, setPeriod] = useState<GoalPeriod>('week')
   const [activityId, setActivityId] = useState(TOTAL_VALUE)
   const [hours, setHours] = useState('2')
@@ -26,34 +29,34 @@ export function AddGoalForm({ activities, onAdd }: AddGoalFormProps) {
   return (
     <form className="add-goal-form" onSubmit={handleSubmit}>
       <div className="add-goal-section">
-        <span className="settings-sheet-label">Period</span>
-        <div className="segmented" role="group" aria-label="Period">
+        <span className="settings-sheet-label">{t('goals.periodLabel')}</span>
+        <div className="segmented" role="group" aria-label={t('goals.periodLabel')}>
           <button
             type="button"
             className={period === 'week' ? 'active' : ''}
             onClick={() => setPeriod('week')}
           >
-            Per vecka
+            {t('common.perWeek')}
           </button>
           <button
             type="button"
             className={period === 'month' ? 'active' : ''}
             onClick={() => setPeriod('month')}
           >
-            Per månad
+            {t('common.perMonth')}
           </button>
         </div>
       </div>
 
       <div className="add-goal-section">
-        <span className="settings-sheet-label">Aktivitet</span>
-        <div className="activity-picker" role="group" aria-label="Aktivitet">
+        <span className="settings-sheet-label">{t('goals.activityLabel')}</span>
+        <div className="activity-picker" role="group" aria-label={t('goals.activityLabel')}>
           <button
             type="button"
             className={`activity-picker-chip ${activityId === TOTAL_VALUE ? 'active' : ''}`}
             onClick={() => setActivityId(TOTAL_VALUE)}
           >
-            Alla aktiviteter
+            {t('goals.allActivities')}
           </button>
           {activities.map((activity) => (
             <button
@@ -69,12 +72,12 @@ export function AddGoalForm({ activities, onAdd }: AddGoalFormProps) {
       </div>
 
       <div className="add-goal-section">
-        <span className="settings-sheet-label">Antal timmar</span>
-        <WheelPicker options={HOUR_OPTIONS} value={hours} onChange={setHours} ariaLabel="Måltimmar" />
+        <span className="settings-sheet-label">{t('goals.hoursLabel')}</span>
+        <WheelPicker options={hourOptions} value={hours} onChange={setHours} ariaLabel={t('goals.hoursLabel')} />
       </div>
 
       <button type="submit" className="btn btn-primary">
-        Lägg till mål
+        {t('goals.submit')}
       </button>
     </form>
   )

@@ -19,9 +19,12 @@
 }
 
 .login-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   font-size: 1.4rem;
   font-weight: 700;
-  text-align: center;
 }
 
 .login-subtitle {
@@ -94,6 +97,36 @@
 .login-submit {
   margin-top: 12px;
   width: 100%;
+}
+
+.settings-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 360px;
+}
+
+.settings-profile-form input {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.settings-profile-form input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.settings-save-button {
+  margin-top: 12px;
+  align-self: flex-start;
+}
+
+.settings-hint {
+  margin: 0 0 4px;
 }
 
 .login-note {
@@ -1022,27 +1055,8 @@
   gap: 8px;
 }
 
-.log-hours-form input {
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 8px 12px;
-  color: var(--color-text);
-  font-size: 0.9rem;
-}
-
-.log-hours-form input[type='date'] {
-  flex: 1 1 150px;
-  min-width: 130px;
-}
-
 .log-hours-form .wheel-picker {
   flex: 1 1 130px;
-}
-
-.log-hours-form input:focus {
-  outline: none;
-  border-color: var(--color-accent);
 }
 
 .log-hours-form-actions {

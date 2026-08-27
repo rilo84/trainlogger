@@ -1,21 +1,25 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import { WheelPicker, buildHourOptions } from './WheelPicker'
+import { useTranslation } from 'react-i18next'
+import { WheelPicker, buildHourOptions, buildDateOptions, todayIso } from './WheelPicker'
 
 interface LogHoursFormProps {
+  stepMinutes: number
   onLog: (hours: number, date: string) => void
   onCancel: () => void
 }
 
-function todayIso(): string {
-  return new Date().toISOString().slice(0, 10)
-}
-
-const HOUR_OPTIONS = buildHourOptions(8, 0.25)
-
-export function LogHoursForm({ onLog, onCancel }: LogHoursFormProps) {
+export function LogHoursForm({ stepMinutes, onLog, onCancel }: LogHoursFormProps) {
+  const { t, i18n } = useTranslation()
   const [hours, setHours] = useState('1')
   const [date, setDate] = useState(todayIso)
+
+  const locale = i18n.language === 'en' ? 'en-US' : 'sv-SE'
+  const dateOptions = useMemo(
+    () => buildDateOptions(90, locale, t('logActivity.today'), t('logActivity.yesterday')),
+    [locale, t],
+  )
+  const hourOptions = useMemo(() => buildHourOptions(8, stepMinutes / 60), [stepMinutes])
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -27,20 +31,20 @@ export function LogHoursForm({ onLog, onCancel }: LogHoursFormProps) {
 
   return (
     <form className="log-hours-form" onSubmit={handleSubmit}>
-      <input
-        type="date"
-        value={date}
-        max={todayIso()}
-        onChange={(e) => setDate(e.target.value)}
-        aria-label="Datum"
-      />
-      <WheelPicker options={HOUR_OPTIONS} value={hours} onChange={setHours} ariaLabel="Antal timmar" />
+      <div className="wheel-picker-col">
+        <span className="settings-sheet-label">{t('logActivity.dateLabel')}</span>
+        <WheelPicker options={dateOptions} value={date} onChange={setDate} ariaLabel={t('logHours.dateAria')} />
+      </div>
+      <div className="wheel-picker-col">
+        <span className="settings-sheet-label">{t('logActivity.hoursLabel')}</span>
+        <WheelPicker options={hourOptions} value={hours} onChange={setHours} ariaLabel={t('logHours.hoursAria')} />
+      </div>
       <div className="log-hours-form-actions">
         <button type="submit" className="btn btn-primary btn-small">
-          Logga
+          {t('logHours.submit')}
         </button>
         <button type="button" className="btn btn-ghost btn-small" onClick={onCancel}>
-          Avbryt
+          {t('common.cancel')}
         </button>
       </div>
     </form>

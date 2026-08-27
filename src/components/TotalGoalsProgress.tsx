@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
 import { currentPeriodActualHours } from '../utils'
 import { GoalRing } from './GoalRing'
@@ -8,6 +9,7 @@ interface TotalGoalsProgressProps {
 }
 
 export function TotalGoalsProgress({ activities, goals }: TotalGoalsProgressProps) {
+  const { t } = useTranslation()
   const weekGoal = goals.find((g) => g.activityId === null && g.period === 'week')
   const monthGoal = goals.find((g) => g.activityId === null && g.period === 'month')
 
@@ -19,14 +21,14 @@ export function TotalGoalsProgress({ activities, goals }: TotalGoalsProgressProp
     <div className="chart-card">
       <div className="chart-controls">
         <div className="chart-title-group">
-          <h2>Mål — samtliga aktiviteter</h2>
+          <h2>{t('totalGoals.title')}</h2>
         </div>
       </div>
 
       <div className="goal-rings-row">
         {weekGoal && (
           <GoalRing
-            label="Veckomål"
+            label={t('common.weeklyGoal')}
             actual={currentPeriodActualHours(activities, 'week', null)}
             target={weekGoal.targetHours}
             size={ringSize}
@@ -34,7 +36,7 @@ export function TotalGoalsProgress({ activities, goals }: TotalGoalsProgressProp
         )}
         {monthGoal && (
           <GoalRing
-            label="Månadsmål"
+            label={t('common.monthlyGoal')}
             actual={currentPeriodActualHours(activities, 'month', null)}
             target={monthGoal.targetHours}
             size={ringSize}
