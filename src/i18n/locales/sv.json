@@ -131,5 +131,10 @@
     "languageTitle": "Språk",
     "swedish": "Svenska",
     "english": "English"
+  },
+  "pwa": {
+    "updateAvailable": "En ny version finns tillgänglig",
+    "reload": "Uppdatera",
+    "dismiss": "Inte nu"
   }
 }

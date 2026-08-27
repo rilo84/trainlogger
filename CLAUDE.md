@@ -12,7 +12,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-A single-page React 19 + TypeScript app built with Vite, packaged as an installable PWA (`vite-plugin-pwa`, `registerType: 'autoUpdate'`). The product is branded **Treni** in the UI and PWA manifest; `claudetrainer` is only the repo/package name and the localStorage key prefix. It lets a user log training hours per activity and track them against weekly/monthly goals.
+A single-page React 19 + TypeScript app built with Vite, packaged as an installable PWA (`vite-plugin-pwa`, `registerType: 'prompt'`). The product is branded **Treni** in the UI and PWA manifest; `claudetrainer` is only the repo/package name and the localStorage key prefix. It lets a user log training hours per activity and track them against weekly/monthly goals.
+
+### PWA update flow
+
+`src/components/PwaUpdatePrompt.tsx` (mounted alongside `<App />` in `main.tsx`) uses `useRegisterSW` from `virtual:pwa-register/react`. Because the SW is registered in `prompt` mode, a newly deployed service worker installs but waits; the component shows a toast (`.pwa-toast`) and only calls `updateServiceWorker(true)` — which triggers `skipWaiting` + reload — when the user confirms. It also polls `registration.update()` hourly and on tab focus/visibility so a long-lived installed session notices deploys. Type references for the virtual module are in `src/vite-env.d.ts`.
 
 **No backend, no real authentication.** Everything runs client-side. `LoginPage` simply constructs a `User` object (name + email) and stores it; presence of that object is the only gate on the rest of the app.
 
