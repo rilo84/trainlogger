@@ -3,24 +3,12 @@ import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
 import { formatHours, getWeekStart, getMonthStart } from '../utils'
+import { SERIES_COLORS, OTHER_COLOR, buildActivityColorMap } from '../activityColors'
 
 type ChartType = 'bar' | 'line'
 type Granularity = 'week' | 'month'
 type ViewMode = 'activity' | 'total'
 
-// Validated against the app's dark card surface (#171a21): all 8 slots clear
-// the CVD/contrast checks for adjacent series (see dataviz skill palette.md).
-const SERIES_COLORS = [
-  '#3987e5',
-  '#d95926',
-  '#199e70',
-  '#c98500',
-  '#d55181',
-  '#008300',
-  '#9085e9',
-  '#e66767',
-]
-const OTHER_COLOR = '#898781'
 const MAX_SERIES = SERIES_COLORS.length
 
 interface Series {
@@ -133,6 +121,7 @@ function buildChartData(
   }
 
   const nameById = new Map(activities.map((a) => [a.id, a.name]))
+  const colorMap = buildActivityColorMap(activities)
   const windowTotal = (activityId: string) =>
     expected.reduce((sum, b) => sum + (bucketMap.get(b.key)?.totals.get(activityId) ?? 0), 0)
 
@@ -144,14 +133,16 @@ function buildChartData(
     .sort((a, b) => b.total - a.total)
     .map((a) => a.id)
 
+  // Rank decides which activities get their own bar vs. collapse into "Other";
+  // the colour itself comes from the stable per-activity map so it matches the cards.
   let series: Series[]
   let otherIds: string[] = []
   if (rankedIds.length <= MAX_SERIES) {
-    series = rankedIds.map((id, i) => ({ id, label: nameById.get(id) ?? '', color: SERIES_COLORS[i] }))
+    series = rankedIds.map((id) => ({ id, label: nameById.get(id) ?? '', color: colorMap.get(id) ?? OTHER_COLOR }))
   } else {
     const head = rankedIds.slice(0, MAX_SERIES - 1)
     otherIds = rankedIds.slice(MAX_SERIES - 1)
-    series = head.map((id, i) => ({ id, label: nameById.get(id) ?? '', color: SERIES_COLORS[i] }))
+    series = head.map((id) => ({ id, label: nameById.get(id) ?? '', color: colorMap.get(id) ?? OTHER_COLOR }))
     series.push({ id: '__other__', label: otherLabel, color: OTHER_COLOR })
   }
 

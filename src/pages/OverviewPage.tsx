@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity, AppSettings, Goal } from '../types'
+import { buildActivityColorMap } from '../activityColors'
 import { ActivityHoursChart } from '../components/ActivityHoursChart'
 import { TotalGoalsProgress } from '../components/TotalGoalsProgress'
 import { PerActivityGoalsProgress } from '../components/PerActivityGoalsProgress'
@@ -23,6 +24,7 @@ interface LogFormState {
 export function OverviewPage({ activities, goals, settings, onLogHours, onDeleteLog }: OverviewPageProps) {
   const { t } = useTranslation()
   const [logForm, setLogForm] = useState<LogFormState>({ open: false })
+  const activityColors = buildActivityColorMap(activities)
 
   return (
     <>
@@ -40,7 +42,6 @@ export function OverviewPage({ activities, goals, settings, onLogHours, onDelete
       </header>
 
       <div className="page-body">
-
         {goals.length > 0 && <TotalGoalsProgress activities={activities} goals={goals} />}
 
         {goals.length > 0 && (
@@ -64,6 +65,7 @@ export function OverviewPage({ activities, goals, settings, onLogHours, onDelete
                 key={activity.id}
                 activity={activity}
                 goals={goals}
+                color={activityColors.get(activity.id)}
                 stepMinutes={settings.hourStepMinutes}
                 onLogHours={onLogHours}
                 onDeleteLog={onDeleteLog}

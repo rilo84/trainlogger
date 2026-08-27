@@ -10,12 +10,13 @@ const COLLAPSED_LOG_COUNT = 3
 interface ActivityCardProps {
   activity: Activity
   goals: Goal[]
+  color?: string
   stepMinutes: number
   onLogHours: (activityId: string, hours: number, date: string) => void
   onDeleteLog: (activityId: string, logId: string) => void
 }
 
-export function ActivityCard({ activity, goals, stepMinutes, onLogHours, onDeleteLog }: ActivityCardProps) {
+export function ActivityCard({ activity, goals, color, stepMinutes, onLogHours, onDeleteLog }: ActivityCardProps) {
   const { t } = useTranslation()
   const [isLogging, setIsLogging] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
@@ -29,7 +30,7 @@ export function ActivityCard({ activity, goals, stepMinutes, onLogHours, onDelet
   const monthGoal = goals.find((g) => g.activityId === activity.id && g.period === 'month')
 
   return (
-    <div className="activity-card">
+    <div className="activity-card" style={color ? { borderColor: color } : undefined}>
       <div className="activity-card-header">
         <h3>{activity.name}</h3>
       </div>
