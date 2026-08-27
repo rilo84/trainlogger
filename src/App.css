@@ -872,33 +872,43 @@
 
 .add-goal-form {
   display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.add-goal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.activity-picker {
+  display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
-.add-goal-form select,
-.add-goal-form input {
-  background: var(--color-surface);
+.activity-picker-chip {
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
+  border-radius: 999px;
+  padding: 8px 16px;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.activity-picker-chip:hover {
+  background: var(--color-surface-hover);
   color: var(--color-text);
-  font-size: 0.95rem;
 }
 
-.add-goal-form select {
-  min-width: 200px;
-}
-
-.add-goal-form input {
-  width: 140px;
-}
-
-.add-goal-form select:focus,
-.add-goal-form input:focus {
-  outline: none;
+.activity-picker-chip.active {
+  background: var(--color-surface-hover);
   border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .list {
