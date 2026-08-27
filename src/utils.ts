@@ -14,6 +14,15 @@ export function formatHours(value: number): string {
   return Number(value.toFixed(2)).toString()
 }
 
+export function formatHoursMinutes(hours: number): string {
+  const totalMinutes = Math.round(hours * 60)
+  const h = Math.floor(totalMinutes / 60)
+  const m = totalMinutes % 60
+  if (h === 0) return `${m}m`
+  if (m === 0) return `${h}h`
+  return `${h}h ${m}m`
+}
+
 export function getWeekStart(date: Date): Date {
   const d = new Date(date)
   d.setHours(0, 0, 0, 0)

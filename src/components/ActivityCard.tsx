@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Activity, Goal } from '../types'
-import { sumHours, currentPeriodActualHours } from '../utils'
+import { sumHours, currentPeriodActualHours, formatHoursMinutes } from '../utils'
 import { LogHoursForm } from './LogHoursForm'
 import { GoalRing } from './GoalRing'
 
@@ -32,8 +32,8 @@ export function ActivityCard({ activity, goals, onLogHours, onDeleteLog }: Activ
       </div>
 
       <div className="activity-total">
-        <span className="activity-total-value">{totalHours}</span>
-        <span className="activity-total-label">timmar totalt</span>
+        <span className="activity-total-value">{formatHoursMinutes(totalHours)}</span>
+        <span className="activity-total-label">totalt</span>
       </div>
 
       {(weekGoal || monthGoal) && (
@@ -63,7 +63,7 @@ export function ActivityCard({ activity, goals, onLogHours, onDeleteLog }: Activ
             <li key={log.id}>
               <div className="activity-log-info">
                 <span>{log.date}</span>
-                <span>{log.hours} h</span>
+                <span>{formatHoursMinutes(log.hours)}</span>
               </div>
               <button
                 type="button"

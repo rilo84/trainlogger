@@ -1,16 +1,17 @@
-import type { ReactNode } from 'react'
+import type { ComponentType, ReactNode } from 'react'
 import type { PageId, User } from '../types'
+import { OverviewIcon, ActivitiesIcon, GoalsIcon } from './NavIcons'
 
 interface NavItem {
   id: PageId
   label: string
-  icon: string
+  Icon: ComponentType<{ size?: number }>
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'overview', label: 'Översikt', icon: '📊' },
-  { id: 'activities', label: 'Aktiviteter', icon: '💪' },
-  { id: 'goals', label: 'Mål', icon: '🎯' },
+  { id: 'overview', label: 'Översikt', Icon: OverviewIcon },
+  { id: 'activities', label: 'Aktiviteter', Icon: ActivitiesIcon },
+  { id: 'goals', label: 'Mål', Icon: GoalsIcon },
 ]
 
 interface LayoutProps {
@@ -33,7 +34,9 @@ export function Layout({ activePage, onNavigate, user, onLogout, children }: Lay
               className={`nav-item ${activePage === item.id ? 'active' : ''}`}
               onClick={() => onNavigate(item.id)}
             >
-              <span className="nav-icon">{item.icon}</span>
+              <span className="nav-icon">
+                <item.Icon />
+              </span>
               <span>{item.label}</span>
             </button>
           ))}
@@ -64,7 +67,9 @@ export function Layout({ activePage, onNavigate, user, onLogout, children }: Lay
             className={`bottom-nav-item ${activePage === item.id ? 'active' : ''}`}
             onClick={() => onNavigate(item.id)}
           >
-            <span className="nav-icon">{item.icon}</span>
+            <span className="nav-icon">
+              <item.Icon />
+            </span>
             <span className="nav-label">{item.label}</span>
           </button>
         ))}

@@ -162,7 +162,7 @@
 }
 
 .nav-icon {
-  font-size: 1.1rem;
+  display: inline-flex;
   line-height: 1;
 }
 

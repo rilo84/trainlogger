@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { formatHoursMinutes } from '../utils'
 
 const ITEM_HEIGHT = 40
 const VISIBLE_COUNT = 5
@@ -9,21 +10,12 @@ export interface WheelPickerOption {
   label: string
 }
 
-function formatHoursMinutesLabel(hours: number): string {
-  const totalMinutes = Math.round(hours * 60)
-  const h = Math.floor(totalMinutes / 60)
-  const m = totalMinutes % 60
-  if (h === 0) return `${m}m`
-  if (m === 0) return `${h}h`
-  return `${h}h ${m}m`
-}
-
 // Step defaults to 15 minutes (0.25h); later this will become a user setting.
 export function buildHourOptions(maxHours = 8, step = 0.25): WheelPickerOption[] {
   const options: WheelPickerOption[] = []
   for (let h = step; h <= maxHours + 1e-9; h += step) {
     const rounded = Math.round(h * 100) / 100
-    options.push({ value: rounded.toString(), label: formatHoursMinutesLabel(rounded) })
+    options.push({ value: rounded.toString(), label: formatHoursMinutes(rounded) })
   }
   return options
 }
