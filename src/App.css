@@ -470,6 +470,32 @@
   padding: 10px 12px;
 }
 
+.settings-sheet-row select {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.goal-progress-body {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.goal-progress-percent {
+  fill: var(--color-text);
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.goal-progress-hours {
+  fill: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
 .log-activity-button {
   align-self: flex-start;
 }

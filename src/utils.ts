@@ -13,3 +13,15 @@ export function totalHoursForActivities(activities: Activity[]): number {
 export function formatHours(value: number): string {
   return Number(value.toFixed(2)).toString()
 }
+
+export function getWeekStart(date: Date): Date {
+  const d = new Date(date)
+  d.setHours(0, 0, 0, 0)
+  const day = (d.getDay() + 6) % 7
+  d.setDate(d.getDate() - day)
+  return d
+}
+
+export function getMonthStart(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), 1)
+}

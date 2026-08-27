@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Activity, Goal } from '../types'
 import { totalHoursForActivities } from '../utils'
 import { ActivityHoursChart } from '../components/ActivityHoursChart'
+import { GoalProgressCard } from '../components/GoalProgressCard'
 import { ActivityCard } from '../components/ActivityCard'
 import { LogActivityForm } from '../components/LogActivityForm'
 
@@ -32,6 +33,8 @@ export function OverviewPage({ activities, goals, onLogHours }: OverviewPageProp
             + Logga aktivitet
           </button>
         )}
+
+        {goals.length > 0 && <GoalProgressCard activities={activities} goals={goals} />}
 
         {activities.length > 0 && <ActivityHoursChart activities={activities} goals={goals} />}
 

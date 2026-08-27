@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { Activity, Goal } from '../types'
-import { formatHours } from '../utils'
+import { formatHours, getWeekStart, getMonthStart } from '../utils'
 
 type ChartType = 'bar' | 'line'
 type Granularity = 'week' | 'month'
@@ -40,18 +40,6 @@ const MIN_WIDTH = 280
 const HEIGHT = 300
 const MARGIN = { top: 16, right: 16, bottom: 32, left: 38 }
 const PLOT_HEIGHT = HEIGHT - MARGIN.top - MARGIN.bottom
-
-function getWeekStart(date: Date): Date {
-  const d = new Date(date)
-  d.setHours(0, 0, 0, 0)
-  const day = (d.getDay() + 6) % 7
-  d.setDate(d.getDate() - day)
-  return d
-}
-
-function getMonthStart(date: Date): Date {
-  return new Date(date.getFullYear(), date.getMonth(), 1)
-}
 
 // ISO 8601 week number: the week containing the year's first Thursday is week 1.
 function getISOWeekLabel(date: Date): string {
