@@ -81,6 +81,12 @@ function App() {
     )
   }
 
+  function handleDeleteLog(activityId: string, logId: string) {
+    setActivities((prev) =>
+      prev.map((a) => (a.id === activityId ? { ...a, logs: a.logs.filter((l) => l.id !== logId) } : a)),
+    )
+  }
+
   function handleAddGoal(goal: { activityId: string | null; period: GoalPeriod; targetHours: number }) {
     setGoals((prev) => [...prev, { id: createId(), ...goal }])
   }
@@ -96,7 +102,12 @@ function App() {
   return (
     <Layout activePage={activePage} onNavigate={setActivePage} user={user} onLogout={() => setUser(null)}>
       {activePage === 'overview' && (
-        <OverviewPage activities={activities} goals={goals} onLogHours={handleLogHours} />
+        <OverviewPage
+          activities={activities}
+          goals={goals}
+          onLogHours={handleLogHours}
+          onDeleteLog={handleDeleteLog}
+        />
       )}
       {activePage === 'activities' && (
         <ActivitiesPage activities={activities} onAdd={handleAddActivity} onDelete={handleDeleteActivity} />

@@ -10,9 +10,10 @@ interface OverviewPageProps {
   activities: Activity[]
   goals: Goal[]
   onLogHours: (activityId: string, hours: number, date: string) => void
+  onDeleteLog: (activityId: string, logId: string) => void
 }
 
-export function OverviewPage({ activities, goals, onLogHours }: OverviewPageProps) {
+export function OverviewPage({ activities, goals, onLogHours, onDeleteLog }: OverviewPageProps) {
   const [logFormOpen, setLogFormOpen] = useState(false)
   const totalHoursAllTime = totalHoursForActivities(activities)
 
@@ -45,7 +46,13 @@ export function OverviewPage({ activities, goals, onLogHours }: OverviewPageProp
         ) : (
           <div className="activity-grid">
             {activities.map((activity) => (
-              <ActivityCard key={activity.id} activity={activity} goals={goals} onLogHours={onLogHours} />
+              <ActivityCard
+                key={activity.id}
+                activity={activity}
+                goals={goals}
+                onLogHours={onLogHours}
+                onDeleteLog={onDeleteLog}
+              />
             ))}
           </div>
         )}

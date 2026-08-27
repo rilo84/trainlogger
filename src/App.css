@@ -956,9 +956,26 @@
 
 .activity-log-list li {
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  gap: 8px;
   font-size: 0.85rem;
   color: var(--color-text-muted);
+}
+
+.activity-log-info {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.activity-log-toggle {
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+  color: var(--color-accent);
+  font-size: 0.82rem;
+  padding: 0;
 }
 
 .log-hours-form {

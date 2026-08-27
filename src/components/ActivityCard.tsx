@@ -4,17 +4,23 @@ import { sumHours, currentPeriodActualHours } from '../utils'
 import { LogHoursForm } from './LogHoursForm'
 import { GoalRing } from './GoalRing'
 
+const COLLAPSED_LOG_COUNT = 3
+
 interface ActivityCardProps {
   activity: Activity
   goals: Goal[]
   onLogHours: (activityId: string, hours: number, date: string) => void
+  onDeleteLog: (activityId: string, logId: string) => void
 }
 
-export function ActivityCard({ activity, goals, onLogHours }: ActivityCardProps) {
+export function ActivityCard({ activity, goals, onLogHours, onDeleteLog }: ActivityCardProps) {
   const [isLogging, setIsLogging] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const totalHours = sumHours(activity.logs)
-  const recentLogs = [...activity.logs].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3)
+  const sortedLogs = [...activity.logs].sort((a, b) => b.date.localeCompare(a.date))
+  const visibleLogs = isExpanded ? sortedLogs : sortedLogs.slice(0, COLLAPSED_LOG_COUNT)
+  const hasMoreLogs = sortedLogs.length > COLLAPSED_LOG_COUNT
 
   const weekGoal = goals.find((g) => g.activityId === activity.id && g.period === 'week')
   const monthGoal = goals.find((g) => g.activityId === activity.id && g.period === 'month')
@@ -51,15 +57,31 @@ export function ActivityCard({ activity, goals, onLogHours }: ActivityCardProps)
         </div>
       )}
 
-      {recentLogs.length > 0 && (
+      {visibleLogs.length > 0 && (
         <ul className="activity-log-list">
-          {recentLogs.map((log) => (
+          {visibleLogs.map((log) => (
             <li key={log.id}>
-              <span>{log.date}</span>
-              <span>{log.hours} h</span>
+              <div className="activity-log-info">
+                <span>{log.date}</span>
+                <span>{log.hours} h</span>
+              </div>
+              <button
+                type="button"
+                className="btn-icon"
+                aria-label={`Ta bort logg ${log.date}, ${log.hours} h`}
+                onClick={() => onDeleteLog(activity.id, log.id)}
+              >
+                ×
+              </button>
             </li>
           ))}
         </ul>
+      )}
+
+      {hasMoreLogs && (
+        <button type="button" className="activity-log-toggle" onClick={() => setIsExpanded((v) => !v)}>
+          {isExpanded ? 'Visa färre' : `Visa alla (${sortedLogs.length})`}
+        </button>
       )}
 
       {isLogging ? (
