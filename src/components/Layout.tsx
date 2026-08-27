@@ -1,6 +1,7 @@
 import type { ComponentType, ReactNode } from 'react'
 import type { PageId, User } from '../types'
 import { OverviewIcon, ActivitiesIcon, GoalsIcon } from './NavIcons'
+import { Logo } from './Logo'
 
 interface NavItem {
   id: PageId
@@ -26,7 +27,10 @@ export function Layout({ activePage, onNavigate, user, onLogout, children }: Lay
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <div className="sidebar-brand">ClaudeTrainer</div>
+        <div className="sidebar-brand">
+          <Logo />
+          <span>Treni</span>
+        </div>
         <nav className="sidebar-nav">
           {NAV_ITEMS.map((item) => (
             <button
@@ -51,7 +55,10 @@ export function Layout({ activePage, onNavigate, user, onLogout, children }: Lay
 
       <div className="app-content">
         <header className="mobile-header">
-          <span className="mobile-header-brand">ClaudeTrainer</span>
+          <span className="mobile-header-brand">
+            <Logo size={22} />
+            <span>Treni</span>
+          </span>
           <button type="button" className="mobile-logout" onClick={onLogout}>
             Logga ut
           </button>
