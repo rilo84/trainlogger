@@ -20,6 +20,9 @@ export function GoalRing({ label, actual, target, size = 160 }: GoalRingProps) {
   const arcColor = reached ? 'var(--color-accent)' : '#3987e5'
   const dashOffset = circumference * (1 - fraction)
 
+  // Below this size the "actual / target h" line is unreadable, so show just the percent, centered.
+  const showDetail = size >= 80
+
   return (
     <div className="goal-ring">
       <svg
@@ -51,22 +54,25 @@ export function GoalRing({ label, actual, target, size = 160 }: GoalRingProps) {
         />
         <text
           x={size / 2}
-          y={size / 2 - size * 0.04}
+          y={showDetail ? size / 2 - size * 0.04 : size / 2}
           textAnchor="middle"
+          dominantBaseline={showDetail ? undefined : 'central'}
           className="goal-progress-percent"
-          style={{ fontSize: size * 0.17 }}
+          style={{ fontSize: showDetail ? size * 0.17 : size * 0.26 }}
         >
           {percent}%
         </text>
-        <text
-          x={size / 2}
-          y={size / 2 + size * 0.12}
-          textAnchor="middle"
-          className="goal-progress-hours"
-          style={{ fontSize: size * 0.075 }}
-        >
-          {formatHours(actual)} / {formatHours(target)} h
-        </text>
+        {showDetail && (
+          <text
+            x={size / 2}
+            y={size / 2 + size * 0.12}
+            textAnchor="middle"
+            className="goal-progress-hours"
+            style={{ fontSize: size * 0.075 }}
+          >
+            {formatHours(actual)} / {formatHours(target)} h
+          </text>
+        )}
       </svg>
       <div className="goal-ring-label">{label}</div>
     </div>

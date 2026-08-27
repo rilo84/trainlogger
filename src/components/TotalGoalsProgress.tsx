@@ -15,7 +15,7 @@ export function TotalGoalsProgress({ activities, goals }: TotalGoalsProgressProp
 
   if (!weekGoal && !monthGoal) return null
 
-  const ringSize = weekGoal && monthGoal ? 130 : 160
+  const ringSize = weekGoal && monthGoal ? 96 : 112
 
   return (
     <div className="chart-card">

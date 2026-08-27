@@ -42,7 +42,7 @@ export function PerActivityGoalsProgress({ activities, goals, onSelectActivity }
               label={t('common.weeklyGoal')}
               actual={currentPeriodActualHours([activity], 'week', activity.id)}
               target={weekGoal!.targetHours}
-              size={88}
+              size={62}
             />
           </button>
         ))}
