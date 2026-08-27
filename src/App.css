@@ -333,6 +333,13 @@
   }
 }
 
+.overview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .page-subtitle {
   margin-top: 8px;
   color: var(--color-text-muted);
@@ -625,7 +632,9 @@
 }
 
 .log-activity-button {
-  align-self: flex-start;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  font-size: 0.85rem;
 }
 
 .log-activity-form {

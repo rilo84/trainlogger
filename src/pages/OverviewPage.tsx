@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity, AppSettings, Goal } from '../types'
-import { totalHoursForActivities } from '../utils'
 import { ActivityHoursChart } from '../components/ActivityHoursChart'
 import { TotalGoalsProgress } from '../components/TotalGoalsProgress'
 import { PerActivityGoalsProgress } from '../components/PerActivityGoalsProgress'
@@ -24,20 +23,11 @@ interface LogFormState {
 export function OverviewPage({ activities, goals, settings, onLogHours, onDeleteLog }: OverviewPageProps) {
   const { t } = useTranslation()
   const [logForm, setLogForm] = useState<LogFormState>({ open: false })
-  const totalHoursAllTime = totalHoursForActivities(activities)
 
   return (
     <>
-      <header className="page-header page-header-compact">
+      <header className="page-header page-header-compact overview-header">
         <h1>{t('nav.overview')}</h1>
-        <p className="page-subtitle">
-          {activities.length === 0
-            ? t('overview.noActivities')
-            : t('overview.summary', { count: activities.length, hours: totalHoursAllTime })}
-        </p>
-      </header>
-
-      <div className="page-body">
         {activities.length > 0 && (
           <button
             type="button"
@@ -47,6 +37,9 @@ export function OverviewPage({ activities, goals, settings, onLogHours, onDelete
             {t('overview.logActivityButton')}
           </button>
         )}
+      </header>
+
+      <div className="page-body">
 
         {goals.length > 0 && <TotalGoalsProgress activities={activities} goals={goals} />}
 
