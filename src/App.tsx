@@ -113,7 +113,11 @@ function App() {
   }
 
   function handleAddGoal(goal: { activityId: string | null; period: GoalPeriod; targetHours: number }) {
-    setGoals((prev) => [...prev, { id: createId(), ...goal }])
+    setGoals((prev) => {
+      const isDuplicate = prev.some((g) => g.activityId === goal.activityId && g.period === goal.period)
+      if (isDuplicate) return prev
+      return [...prev, { id: createId(), ...goal }]
+    })
   }
 
   function handleDeleteGoal(goalId: string) {

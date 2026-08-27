@@ -24,7 +24,7 @@ export function GoalsPage({ activities, goals, settings, onAdd, onDelete }: Goal
       </header>
 
       <div className="page-body">
-        <AddGoalForm activities={activities} stepMinutes={settings.hourStepMinutes} onAdd={onAdd} />
+        <AddGoalForm activities={activities} goals={goals} stepMinutes={settings.hourStepMinutes} onAdd={onAdd} />
 
         {goals.length === 0 ? (
           <div className="empty-state">
