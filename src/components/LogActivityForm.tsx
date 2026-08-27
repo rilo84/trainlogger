@@ -8,13 +8,20 @@ import type { WheelPickerOption } from './WheelPicker'
 interface LogActivityFormProps {
   activities: Activity[]
   stepMinutes: number
+  initialActivityId?: string
   onLog: (activityId: string, hours: number, date: string) => void
   onClose: () => void
 }
 
-export function LogActivityForm({ activities, stepMinutes, onLog, onClose }: LogActivityFormProps) {
+export function LogActivityForm({
+  activities,
+  stepMinutes,
+  initialActivityId,
+  onLog,
+  onClose,
+}: LogActivityFormProps) {
   const { t, i18n } = useTranslation()
-  const [activityId, setActivityId] = useState(activities[0]?.id ?? '')
+  const [activityId, setActivityId] = useState(initialActivityId ?? activities[0]?.id ?? '')
   const [date, setDate] = useState(todayIso)
   const [hours, setHours] = useState('1')
 

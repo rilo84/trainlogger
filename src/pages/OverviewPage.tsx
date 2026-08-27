@@ -16,9 +16,14 @@ interface OverviewPageProps {
   onDeleteLog: (activityId: string, logId: string) => void
 }
 
+interface LogFormState {
+  open: boolean
+  activityId?: string
+}
+
 export function OverviewPage({ activities, goals, settings, onLogHours, onDeleteLog }: OverviewPageProps) {
   const { t } = useTranslation()
-  const [logFormOpen, setLogFormOpen] = useState(false)
+  const [logForm, setLogForm] = useState<LogFormState>({ open: false })
   const totalHoursAllTime = totalHoursForActivities(activities)
 
   return (
@@ -34,14 +39,24 @@ export function OverviewPage({ activities, goals, settings, onLogHours, onDelete
 
       <div className="page-body">
         {activities.length > 0 && (
-          <button type="button" className="btn btn-primary log-activity-button" onClick={() => setLogFormOpen(true)}>
+          <button
+            type="button"
+            className="btn btn-primary log-activity-button"
+            onClick={() => setLogForm({ open: true })}
+          >
             {t('overview.logActivityButton')}
           </button>
         )}
 
         {goals.length > 0 && <TotalGoalsProgress activities={activities} goals={goals} />}
 
-        {goals.length > 0 && <PerActivityGoalsProgress activities={activities} goals={goals} />}
+        {goals.length > 0 && (
+          <PerActivityGoalsProgress
+            activities={activities}
+            goals={goals}
+            onSelectActivity={(activityId) => setLogForm({ open: true, activityId })}
+          />
+        )}
 
         {activities.length > 0 && <ActivityHoursChart activities={activities} goals={goals} />}
 
@@ -65,12 +80,13 @@ export function OverviewPage({ activities, goals, settings, onLogHours, onDelete
         )}
       </div>
 
-      {logFormOpen && (
+      {logForm.open && (
         <LogActivityForm
           activities={activities}
           stepMinutes={settings.hourStepMinutes}
+          initialActivityId={logForm.activityId}
           onLog={onLogHours}
-          onClose={() => setLogFormOpen(false)}
+          onClose={() => setLogForm({ open: false })}
         />
       )}
     </>

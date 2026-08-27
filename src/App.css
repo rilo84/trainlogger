@@ -582,13 +582,14 @@
 
 .per-activity-goals-grid {
   display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+  flex-wrap: nowrap;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
 }
 
 .per-activity-goals-item {
-  flex: 1 1 calc(33.333% - 14px);
-  min-width: 200px;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -597,10 +598,18 @@
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-family: inherit;
+}
+
+.per-activity-goals-item:hover {
+  border-color: var(--color-accent);
+  background: var(--color-surface-hover);
 }
 
 .per-activity-goals-name {
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .log-activity-button {

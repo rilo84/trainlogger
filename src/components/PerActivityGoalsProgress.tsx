@@ -6,18 +6,18 @@ import { GoalRing } from './GoalRing'
 interface PerActivityGoalsProgressProps {
   activities: Activity[]
   goals: Goal[]
+  onSelectActivity: (activityId: string) => void
 }
 
-export function PerActivityGoalsProgress({ activities, goals }: PerActivityGoalsProgressProps) {
+export function PerActivityGoalsProgress({ activities, goals, onSelectActivity }: PerActivityGoalsProgressProps) {
   const { t } = useTranslation()
 
   const entries = activities
     .map((activity) => ({
       activity,
       weekGoal: goals.find((g) => g.activityId === activity.id && g.period === 'week'),
-      monthGoal: goals.find((g) => g.activityId === activity.id && g.period === 'month'),
     }))
-    .filter((entry) => entry.weekGoal || entry.monthGoal)
+    .filter((entry) => entry.weekGoal)
 
   if (entries.length === 0) return null
 
@@ -30,28 +30,21 @@ export function PerActivityGoalsProgress({ activities, goals }: PerActivityGoals
       </div>
 
       <div className="per-activity-goals-grid">
-        {entries.map(({ activity, weekGoal, monthGoal }) => (
-          <div className="per-activity-goals-item" key={activity.id}>
+        {entries.map(({ activity, weekGoal }) => (
+          <button
+            type="button"
+            className="per-activity-goals-item"
+            key={activity.id}
+            onClick={() => onSelectActivity(activity.id)}
+          >
             <div className="per-activity-goals-name">{activity.name}</div>
-            <div className="goal-rings-row goal-rings-row-small">
-              {weekGoal && (
-                <GoalRing
-                  label={t('common.weeklyGoal')}
-                  actual={currentPeriodActualHours([activity], 'week', activity.id)}
-                  target={weekGoal.targetHours}
-                  size={88}
-                />
-              )}
-              {monthGoal && (
-                <GoalRing
-                  label={t('common.monthlyGoal')}
-                  actual={currentPeriodActualHours([activity], 'month', activity.id)}
-                  target={monthGoal.targetHours}
-                  size={88}
-                />
-              )}
-            </div>
-          </div>
+            <GoalRing
+              label={t('common.weeklyGoal')}
+              actual={currentPeriodActualHours([activity], 'week', activity.id)}
+              target={weekGoal!.targetHours}
+              size={88}
+            />
+          </button>
         ))}
       </div>
     </div>
