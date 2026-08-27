@@ -655,7 +655,6 @@
 .wheel-picker-scroll {
   height: 100%;
   overflow-y: auto;
-  scroll-snap-type: y mandatory;
   scrollbar-width: none;
 }
 
@@ -664,7 +663,6 @@
 }
 
 .wheel-picker-item {
-  scroll-snap-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
