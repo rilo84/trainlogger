@@ -1,4 +1,4 @@
-import type { Activity, LogEntry } from './types'
+import type { Activity, GoalPeriod, LogEntry } from './types'
 
 export function sumHours(logs: LogEntry[]): number {
   const total = logs.reduce((sum, log) => sum + log.hours, 0)
@@ -24,4 +24,24 @@ export function getWeekStart(date: Date): Date {
 
 export function getMonthStart(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), 1)
+}
+
+// activityId === null sums across all activities (a "total" goal's progress).
+export function currentPeriodActualHours(
+  activities: Activity[],
+  period: GoalPeriod,
+  activityId: string | null,
+): number {
+  const now = new Date()
+  const periodStart = (period === 'week' ? getWeekStart(now) : getMonthStart(now)).getTime()
+  let total = 0
+  for (const activity of activities) {
+    if (activityId !== null && activity.id !== activityId) continue
+    for (const log of activity.logs) {
+      const logDate = new Date(log.date)
+      const logPeriodStart = (period === 'week' ? getWeekStart(logDate) : getMonthStart(logDate)).getTime()
+      if (logPeriodStart === periodStart) total += log.hours
+    }
+  }
+  return Math.round(total * 100) / 100
 }

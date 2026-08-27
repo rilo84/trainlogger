@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { Activity, Goal } from '../types'
 import { totalHoursForActivities } from '../utils'
 import { ActivityHoursChart } from '../components/ActivityHoursChart'
-import { GoalProgressCard } from '../components/GoalProgressCard'
+import { TotalGoalsProgress } from '../components/TotalGoalsProgress'
 import { ActivityCard } from '../components/ActivityCard'
 import { LogActivityForm } from '../components/LogActivityForm'
 
@@ -34,7 +34,7 @@ export function OverviewPage({ activities, goals, onLogHours }: OverviewPageProp
           </button>
         )}
 
-        {goals.length > 0 && <GoalProgressCard activities={activities} goals={goals} />}
+        {goals.length > 0 && <TotalGoalsProgress activities={activities} goals={goals} />}
 
         {activities.length > 0 && <ActivityHoursChart activities={activities} goals={goals} />}
 
@@ -45,7 +45,7 @@ export function OverviewPage({ activities, goals, onLogHours }: OverviewPageProp
         ) : (
           <div className="activity-grid">
             {activities.map((activity) => (
-              <ActivityCard key={activity.id} activity={activity} onLogHours={onLogHours} />
+              <ActivityCard key={activity.id} activity={activity} goals={goals} onLogHours={onLogHours} />
             ))}
           </div>
         )}
