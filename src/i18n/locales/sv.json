@@ -58,6 +58,8 @@
     "count_one": "{{count}} mål satt",
     "count_other": "{{count}} mål satta",
     "emptyList": "Inga mål tillagda än.",
+    "deleteTitle": "Ta bort mål?",
+    "deleteWarning": "Är du säker på att du vill ta bort detta mål?",
     "allActivities": "Alla aktiviteter",
     "deletedActivity": "Borttagen aktivitet",
     "targetPerPeriod": "{{hours}} h / {{period}}",
@@ -87,6 +89,8 @@
   "activityCard": {
     "totalLabel": "totalt",
     "deleteLogAria": "Ta bort logg {{date}}, {{hours}} h",
+    "deleteLogTitle": "Ta bort loggad tid?",
+    "deleteLogWarning": "Är du säker på att du vill ta bort {{hours}} som loggades {{date}}?",
     "showFewer": "Visa färre",
     "showAll": "Visa alla ({{count}})",
     "logHoursButton": "+ Logga tid"

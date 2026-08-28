@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity } from '../types'
 import { AddActivityForm } from '../components/AddActivityForm'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 
 interface ActivitiesPageProps {
   activities: Activity[]
@@ -12,11 +13,6 @@ interface ActivitiesPageProps {
 export function ActivitiesPage({ activities, onAdd, onDelete }: ActivitiesPageProps) {
   const { t } = useTranslation()
   const [pendingDelete, setPendingDelete] = useState<Activity | null>(null)
-
-  function confirmDelete() {
-    if (pendingDelete) onDelete(pendingDelete.id)
-    setPendingDelete(null)
-  }
 
   return (
     <>
@@ -55,40 +51,16 @@ export function ActivitiesPage({ activities, onAdd, onDelete }: ActivitiesPagePr
       </div>
 
       {pendingDelete && (
-        <div className="settings-sheet-backdrop" onClick={() => setPendingDelete(null)}>
-          <div
-            className="settings-sheet"
-            role="dialog"
-            aria-modal="true"
-            aria-label={t('activities.deleteTitle')}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="settings-sheet-header">
-              <h3>{t('activities.deleteTitle')}</h3>
-              <button
-                type="button"
-                className="btn-icon"
-                onClick={() => setPendingDelete(null)}
-                aria-label={t('common.close')}
-              >
-                ×
-              </button>
-            </div>
-
-            <p className="confirm-text">
-              {t('activities.deleteWarning', { name: pendingDelete.name })}
-            </p>
-
-            <div className="confirm-actions">
-              <button type="button" className="btn btn-danger" onClick={confirmDelete}>
-                {t('common.delete')}
-              </button>
-              <button type="button" className="btn btn-ghost" onClick={() => setPendingDelete(null)}>
-                {t('common.cancel')}
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmDialog
+          title={t('activities.deleteTitle')}
+          message={t('activities.deleteWarning', { name: pendingDelete.name })}
+          confirmLabel={t('common.delete')}
+          onConfirm={() => {
+            onDelete(pendingDelete.id)
+            setPendingDelete(null)
+          }}
+          onCancel={() => setPendingDelete(null)}
+        />
       )}
     </>
   )

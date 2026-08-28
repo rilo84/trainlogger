@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { Activity, AppSettings, Goal, NewGoal } from '../types'
 import { formatMonthName } from '../utils'
 import { AddGoalForm } from '../components/AddGoalForm'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 
 interface GoalsPageProps {
   activities: Activity[]
@@ -18,6 +19,7 @@ export function GoalsPage({ activities, goals, settings, onAdd, onUpdate, onDele
   const nameById = new Map(activities.map((a) => [a.id, a.name]))
 
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null)
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const editingGoal = editingGoalId ? (goals.find((g) => g.id === editingGoalId) ?? null) : null
   const formRef = useRef<HTMLDivElement>(null)
 
@@ -90,10 +92,7 @@ export function GoalsPage({ activities, goals, settings, onAdd, onUpdate, onDele
                 <button
                   className="btn-icon"
                   aria-label={t('goals.deleteAria')}
-                  onClick={() => {
-                    if (editingGoalId === goal.id) setEditingGoalId(null)
-                    onDelete(goal.id)
-                  }}
+                  onClick={() => setPendingDeleteId(goal.id)}
                 >
                   ×
                 </button>
@@ -102,6 +101,20 @@ export function GoalsPage({ activities, goals, settings, onAdd, onUpdate, onDele
           </div>
         )}
       </div>
+
+      {pendingDeleteId && (
+        <ConfirmDialog
+          title={t('goals.deleteTitle')}
+          message={t('goals.deleteWarning')}
+          confirmLabel={t('common.delete')}
+          onConfirm={() => {
+            if (editingGoalId === pendingDeleteId) setEditingGoalId(null)
+            onDelete(pendingDeleteId)
+            setPendingDeleteId(null)
+          }}
+          onCancel={() => setPendingDeleteId(null)}
+        />
+      )}
     </>
   )
 }

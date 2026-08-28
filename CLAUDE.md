@@ -57,7 +57,7 @@ The selected language is stored inside the `settings` object. `i18n.ts` reads `c
 
 `WheelPicker` (`src/components/WheelPicker.tsx`) is a custom touch scroll picker (iOS-style) used for entering hours, dates, and activity selection. It snaps by rounding `scrollTop / ITEM_HEIGHT` after a 120 ms debounce. Helper builders live in the same file: `buildHourOptions(maxHours, step)` where callers pass `stepMinutes / 60` as the step, `buildDateOptions(daysBack, …)` (90 days back, with localized "today"/"yesterday" labels), and `todayIso()`. The minute granularity is `settings.hourStepMinutes` (default 15, options 1–60), configurable on the Settings page.
 
-Modals are not a component — they are an ad-hoc pattern: a `.settings-sheet-backdrop` div with `onClick={onClose}` wrapping a `.settings-sheet` div that calls `e.stopPropagation()`. `LogActivityForm`, the chart's settings sheet, and the `ActivitiesPage` delete confirmation all use it. There is no generic confirm dialog — destructive actions inline their own sheet (`.confirm-text` + `.confirm-actions`, with a `.btn-danger` confirm).
+Modals are mostly an ad-hoc pattern: a `.settings-sheet-backdrop` div with `onClick={onClose}` wrapping a `.settings-sheet` div that calls `e.stopPropagation()` (used by `LogActivityForm` and the chart's settings sheet). The one real modal component is `ConfirmDialog` — every destructive action (delete activity, delete a logged time, delete a goal) renders it with a `title`/`message`/`confirmLabel` and `onConfirm`/`onCancel`; the caller keeps a `pending…` piece of state for the target.
 
 Forms validate inline and **silently `return` on invalid input** (empty name, non-positive hours) — there are no error messages by design.
 

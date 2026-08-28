@@ -58,6 +58,8 @@
     "count_one": "{{count}} goal set",
     "count_other": "{{count}} goals set",
     "emptyList": "No goals added yet.",
+    "deleteTitle": "Remove goal?",
+    "deleteWarning": "Are you sure you want to delete this goal?",
     "allActivities": "All activities",
     "deletedActivity": "Deleted activity",
     "targetPerPeriod": "{{hours}} h / {{period}}",
@@ -87,6 +89,8 @@
   "activityCard": {
     "totalLabel": "total",
     "deleteLogAria": "Delete log {{date}}, {{hours}} h",
+    "deleteLogTitle": "Remove logged time?",
+    "deleteLogWarning": "Are you sure you want to remove {{hours}} logged on {{date}}?",
     "showFewer": "Show fewer",
     "showAll": "Show all ({{count}})",
     "logHoursButton": "+ Log time"

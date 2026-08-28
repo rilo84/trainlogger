@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Activity, Goal } from '../types'
+import type { Activity, Goal, LogEntry } from '../types'
 import {
   sumHours,
   currentPeriodActualHours,
@@ -10,6 +10,7 @@ import {
 } from '../utils'
 import { LogHoursForm } from './LogHoursForm'
 import { GoalRing } from './GoalRing'
+import { ConfirmDialog } from './ConfirmDialog'
 
 const COLLAPSED_LOG_COUNT = 3
 
@@ -26,6 +27,7 @@ export function ActivityCard({ activity, goals, color, stepMinutes, onLogHours, 
   const { t } = useTranslation()
   const [isLogging, setIsLogging] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [pendingDeleteLog, setPendingDeleteLog] = useState<LogEntry | null>(null)
 
   const totalHours = sumHours(activity.logs)
   const sortedLogs = [...activity.logs].sort((a, b) => b.date.localeCompare(a.date))
@@ -79,7 +81,7 @@ export function ActivityCard({ activity, goals, color, stepMinutes, onLogHours, 
                 type="button"
                 className="btn-icon"
                 aria-label={t('activityCard.deleteLogAria', { date: log.date, hours: log.hours })}
-                onClick={() => onDeleteLog(activity.id, log.id)}
+                onClick={() => setPendingDeleteLog(log)}
               >
                 ×
               </button>
@@ -107,6 +109,22 @@ export function ActivityCard({ activity, goals, color, stepMinutes, onLogHours, 
         <button className="btn btn-secondary" onClick={() => setIsLogging(true)}>
           {t('activityCard.logHoursButton')}
         </button>
+      )}
+
+      {pendingDeleteLog && (
+        <ConfirmDialog
+          title={t('activityCard.deleteLogTitle')}
+          message={t('activityCard.deleteLogWarning', {
+            date: pendingDeleteLog.date,
+            hours: formatHoursMinutes(pendingDeleteLog.hours),
+          })}
+          confirmLabel={t('common.delete')}
+          onConfirm={() => {
+            onDeleteLog(activity.id, pendingDeleteLog.id)
+            setPendingDeleteLog(null)
+          }}
+          onCancel={() => setPendingDeleteLog(null)}
+        />
       )}
     </div>
   )
