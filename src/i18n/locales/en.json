@@ -65,16 +65,19 @@
     "submit": "Add goal",
     "goalTypeLabel": "Goal type",
     "goalTypeLinear": "All weeks",
+    "goalTypeLinearMonth": "All months",
     "goalTypePeriodized": "Periodized",
     "weekRangeLabel": "Week range",
+    "monthRangeLabel": "Month range",
     "fromWeekLabel": "From week",
     "toWeekLabel": "To week",
+    "fromMonthLabel": "From month",
+    "toMonthLabel": "To month",
     "weekShort": "wk {{week}}",
     "weekRange": "wk {{from}}–{{to}}",
-    "alreadyExistsHint": "This activity already has a goal for this period.",
-    "linearBlockedHint": "This activity already has a weekly goal. Delete it to add a new one.",
-    "linearExistsHint": "This activity has an all-weeks goal. Delete it to use periods.",
-    "allWeeksTaken": "Every week already has a goal for this activity."
+    "linearBlockedHint": "This activity already has a goal for this period. Delete it to add a new one.",
+    "linearExistsHint": "This activity already has an all-periods goal. Delete it to use periods.",
+    "allPeriodsTaken": "Every period already has a goal for this activity."
   },
   "activityCard": {
     "totalLabel": "total",

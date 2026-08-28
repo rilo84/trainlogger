@@ -2,7 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
-import { formatHours, getWeekStart, getMonthStart, getISOWeek, isWeekGoalActive } from '../utils'
+import {
+  formatHours,
+  getWeekStart,
+  getMonthStart,
+  getISOWeek,
+  isWeekGoalActive,
+  isMonthGoalActive,
+} from '../utils'
 import { SERIES_COLORS, OTHER_COLOR, buildActivityColorMap } from '../activityColors'
 
 type ChartType = 'bar' | 'line'
@@ -22,6 +29,7 @@ interface ChartPoint {
   values: number[]
   activityTotals: Map<string, number>
   isoWeek?: number
+  month?: number
 }
 
 const DEFAULT_WIDTH = 640
@@ -171,6 +179,7 @@ function buildChartData(
       values: values.map((v) => Math.round(v * 100) / 100),
       activityTotals: totals,
       isoWeek: granularity === 'week' ? getISOWeek(start) : undefined,
+      month: granularity === 'month' ? start.getMonth() + 1 : undefined,
     }
   })
 
@@ -189,11 +198,13 @@ function getGoalActual(goal: Goal, point: ChartPoint): number {
   return point.activityTotals.get(goal.activityId) ?? 0
 }
 
-// A periodized weekly goal only applies to the buckets whose ISO week is in its range;
-// linear weekly goals and month goals apply to every bucket.
+// A periodized goal only applies to the buckets inside its range (ISO week for a weekly
+// goal, calendar month for a monthly one); linear goals apply to every bucket.
 function goalCoversPoint(goal: Goal, point: ChartPoint): boolean {
-  if (goal.period !== 'week' || point.isoWeek == null) return true
-  return isWeekGoalActive(goal, point.isoWeek)
+  if (goal.period === 'week') {
+    return point.isoWeek == null || isWeekGoalActive(goal, point.isoWeek)
+  }
+  return point.month == null || isMonthGoalActive(goal, point.month)
 }
 
 function resolveGoalColor(actual: number, targetHours: number, baseColor: string): { color: string; passed: boolean } {

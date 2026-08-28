@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import i18n from './i18n/i18n'
 import type { Activity, AppSettings, Goal, NewGoal, PageId, User } from './types'
+import { goalRange } from './utils'
 import { Layout } from './components/Layout'
 import { LoginPage } from './pages/LoginPage'
 import { OverviewPage } from './pages/OverviewPage'
@@ -122,25 +123,19 @@ function App() {
   function handleAddGoal(goal: NewGoal) {
     setGoals((prev) => {
       const sameTarget = prev.filter((g) => g.activityId === goal.activityId && g.period === goal.period)
-      if (goal.period === 'week') {
-        const incomingPeriodized = goal.weekStart != null && goal.weekEnd != null
-        if (!incomingPeriodized) {
-          // A linear (every-week) goal needs a clean slate for this activity.
-          if (sameTarget.length > 0) return prev
-        } else {
-          // Periodized: not allowed alongside a linear goal, and must not overlap another block.
-          if (sameTarget.some((g) => g.weekStart == null)) return prev
-          const overlaps = sameTarget.some(
-            (g) =>
-              g.weekStart != null &&
-              g.weekEnd != null &&
-              goal.weekStart! <= g.weekEnd &&
-              g.weekStart <= goal.weekEnd!,
-          )
-          if (overlaps) return prev
-        }
-      } else if (sameTarget.length > 0) {
-        return prev
+      const incoming = goalRange(goal)
+      if (incoming == null) {
+        // A linear (every-period) goal needs a clean slate for this target.
+        if (sameTarget.length > 0) return prev
+      } else {
+        // Periodized: not allowed alongside a linear goal, and must not overlap another block.
+        if (sameTarget.some((g) => goalRange(g) == null)) return prev
+        const [start, end] = incoming
+        const overlaps = sameTarget.some((g) => {
+          const r = goalRange(g)
+          return r != null && start <= r[1] && r[0] <= end
+        })
+        if (overlaps) return prev
       }
       return [...prev, { id: createId(), ...goal }]
     })

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { Activity, AppSettings, Goal, NewGoal } from '../types'
+import { formatMonthName } from '../utils'
 import { AddGoalForm } from '../components/AddGoalForm'
 
 interface GoalsPageProps {
@@ -11,7 +12,7 @@ interface GoalsPageProps {
 }
 
 export function GoalsPage({ activities, goals, settings, onAdd, onDelete }: GoalsPageProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const nameById = new Map(activities.map((a) => [a.id, a.name]))
 
   return (
@@ -47,6 +48,13 @@ export function GoalsPage({ activities, goals, settings, onAdd, onDelete }: Goal
                     })}
                     {goal.weekStart != null && goal.weekEnd != null && (
                       <> · {t('goals.weekRange', { from: goal.weekStart, to: goal.weekEnd })}</>
+                    )}
+                    {goal.monthStart != null && goal.monthEnd != null && (
+                      <>
+                        {' · '}
+                        {formatMonthName(goal.monthStart, i18n.language, 'short')}–
+                        {formatMonthName(goal.monthEnd, i18n.language, 'short')}
+                      </>
                     )}
                   </div>
                 </div>

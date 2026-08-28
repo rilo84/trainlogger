@@ -65,16 +65,19 @@
     "submit": "Lägg till mål",
     "goalTypeLabel": "Måltyp",
     "goalTypeLinear": "Samtliga veckor",
+    "goalTypeLinearMonth": "Samtliga månader",
     "goalTypePeriodized": "Periodiserat",
     "weekRangeLabel": "Veckospann",
+    "monthRangeLabel": "Månadsspann",
     "fromWeekLabel": "Från vecka",
     "toWeekLabel": "Till vecka",
+    "fromMonthLabel": "Från månad",
+    "toMonthLabel": "Till månad",
     "weekShort": "v.{{week}}",
     "weekRange": "v.{{from}}–{{to}}",
-    "alreadyExistsHint": "Det finns redan ett mål för den här aktiviteten och perioden.",
-    "linearBlockedHint": "Aktiviteten har redan ett veckomål. Ta bort det för att lägga till ett nytt.",
-    "linearExistsHint": "Aktiviteten har ett veckomål för samtliga veckor. Ta bort det för att periodisera.",
-    "allWeeksTaken": "Alla veckor har redan ett mål för den här aktiviteten."
+    "linearBlockedHint": "Aktiviteten har redan ett mål för den här perioden. Ta bort det för att lägga till ett nytt.",
+    "linearExistsHint": "Aktiviteten har redan ett mål för samtliga perioder. Ta bort det för att periodisera.",
+    "allPeriodsTaken": "Alla perioder har redan ett mål för den här aktiviteten."
   },
   "activityCard": {
     "totalLabel": "totalt",

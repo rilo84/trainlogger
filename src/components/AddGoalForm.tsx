@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal, GoalPeriod, NewGoal } from '../types'
-import { getISOWeek } from '../utils'
+import { getISOWeek, goalRange, formatMonthName } from '../utils'
 import { WheelPicker, buildHourOptions } from './WheelPicker'
 
 interface AddGoalFormProps {
@@ -12,94 +12,101 @@ interface AddGoalFormProps {
   onAdd: (goal: NewGoal) => void
 }
 
-type WeekMode = 'linear' | 'periodized'
+type GoalKind = 'linear' | 'periodized'
 
 const TOTAL_VALUE = '__total__'
-const ALL_WEEKS = Array.from({ length: 53 }, (_, i) => i + 1)
+const WEEKS = Array.from({ length: 53 }, (_, i) => i + 1)
+const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1)
 
 export function AddGoalForm({ activities, goals, stepMinutes, onAdd }: AddGoalFormProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const hourOptions = useMemo(() => buildHourOptions(40, stepMinutes / 60), [stepMinutes])
   const [period, setPeriod] = useState<GoalPeriod>('week')
-  const [weekMode, setWeekMode] = useState<WeekMode>('linear')
+  const [goalKind, setGoalKind] = useState<GoalKind>('linear')
   const [activityId, setActivityId] = useState(TOTAL_VALUE)
   const [hours, setHours] = useState('2')
-  const [fromWeek, setFromWeek] = useState(() => String(getISOWeek(new Date())))
-  const [toWeek, setToWeek] = useState(fromWeek)
+  const [rangeFrom, setRangeFrom] = useState(() => String(getISOWeek(new Date())))
+  const [rangeTo, setRangeTo] = useState(rangeFrom)
 
   const selectedActivityId = activityId === TOTAL_VALUE ? null : activityId
+  const isWeek = period === 'week'
+  const units = isWeek ? WEEKS : MONTHS
+  const currentUnit = isWeek ? getISOWeek(new Date()) : new Date().getMonth() + 1
 
-  const weekGoalsForActivity = useMemo(
-    () => goals.filter((g) => g.period === 'week' && g.activityId === selectedActivityId),
-    [goals, selectedActivityId],
+  const goalsForActivity = useMemo(
+    () => goals.filter((g) => g.period === period && g.activityId === selectedActivityId),
+    [goals, period, selectedActivityId],
   )
-  const hasLinearWeekGoal = weekGoalsForActivity.some((g) => g.weekStart == null)
-  const hasPeriodizedWeekGoal = weekGoalsForActivity.some((g) => g.weekStart != null)
-  const hasAnyWeekGoal = weekGoalsForActivity.length > 0
+  const hasLinear = goalsForActivity.some((g) => goalRange(g) == null)
+  const hasPeriodized = goalsForActivity.some((g) => goalRange(g) != null)
+  const hasAnyGoal = goalsForActivity.length > 0
 
-  const takenWeeks = useMemo(() => {
+  const takenUnits = useMemo(() => {
     const set = new Set<number>()
-    for (const g of weekGoalsForActivity) {
-      if (g.weekStart != null && g.weekEnd != null) {
-        for (let w = g.weekStart; w <= g.weekEnd; w++) set.add(w)
-      }
+    for (const g of goalsForActivity) {
+      const r = goalRange(g)
+      if (r) for (let u = r[0]; u <= r[1]; u++) set.add(u)
     }
     return set
-  }, [weekGoalsForActivity])
-  const freeFromWeeks = useMemo(() => ALL_WEEKS.filter((w) => !takenWeeks.has(w)), [takenWeeks])
+  }, [goalsForActivity])
+  const freeStartUnits = useMemo(() => units.filter((u) => !takenUnits.has(u)), [units, takenUnits])
 
-  // "To week" can run from the chosen start up to the week before the next occupied one,
+  // A block can run from the chosen start up to the unit before the next occupied one,
   // so a new block can never overlap an existing one.
-  function weeksFrom(start: number): number[] {
-    let end = 53
-    for (let w = start + 1; w <= 53; w++) {
-      if (takenWeeks.has(w)) {
-        end = w - 1
+  function unitsFrom(start: number): number[] {
+    const max = units[units.length - 1]
+    let end = max
+    for (let u = start + 1; u <= max; u++) {
+      if (takenUnits.has(u)) {
+        end = u - 1
         break
       }
     }
     const out: number[] = []
-    for (let w = start; w <= end; w++) out.push(w)
+    for (let u = start; u <= end; u++) out.push(u)
     return out
   }
 
-  // A linear (every-week) goal can't coexist with periodized blocks for the same activity.
-  const linearDisabled = period === 'week' && hasPeriodizedWeekGoal
-  const effectiveWeekMode: WeekMode =
-    period !== 'week' ? 'linear' : linearDisabled ? 'periodized' : weekMode
-  const showWeekRange = period === 'week' && effectiveWeekMode === 'periodized' && freeFromWeeks.length > 0
+  // A linear (every-period) goal can't coexist with periodized blocks for the same target.
+  const linearDisabled = hasPeriodized
+  const effectiveKind: GoalKind = linearDisabled ? 'periodized' : goalKind
+  const showRange = effectiveKind === 'periodized' && freeStartUnits.length > 0
 
-  // Keep the week pickers pointed at a still-free, non-overlapping range.
+  // Switching week <-> month makes the old index meaningless; start from "now" again.
   useEffect(() => {
-    if (!showWeekRange) return
-    const from = Number(fromWeek)
-    if (!freeFromWeeks.includes(from)) {
-      const current = getISOWeek(new Date())
-      const fallback = freeFromWeeks.includes(current) ? current : freeFromWeeks[0]
-      setFromWeek(String(fallback))
-      setToWeek(String(fallback))
+    setRangeFrom(String(currentUnit))
+    setRangeTo(String(currentUnit))
+  }, [period, currentUnit])
+
+  // Keep the range pickers pointed at a still-free, non-overlapping span.
+  useEffect(() => {
+    if (!showRange) return
+    const from = Number(rangeFrom)
+    if (!freeStartUnits.includes(from)) {
+      const fallback = freeStartUnits.includes(currentUnit) ? currentUnit : freeStartUnits[0]
+      setRangeFrom(String(fallback))
+      setRangeTo(String(fallback))
       return
     }
-    if (!weeksFrom(from).includes(Number(toWeek))) {
-      setToWeek(String(from))
+    if (!unitsFrom(from).includes(Number(rangeTo))) {
+      setRangeTo(String(from))
     }
-  }, [showWeekRange, takenWeeks, freeFromWeeks, fromWeek, toWeek])
+  }, [showRange, period, takenUnits, freeStartUnits, rangeFrom, rangeTo, currentUnit])
 
-  const weekLabel = (w: number) => ({ value: String(w), label: t('goals.weekShort', { week: w }) })
-  const fromWeekOptions = freeFromWeeks.map(weekLabel)
-  const toWeekOptions = weeksFrom(Number(fromWeek)).map(weekLabel)
+  const unitOption = (u: number) => ({
+    value: String(u),
+    label: isWeek ? t('goals.weekShort', { week: u }) : formatMonthName(u, i18n.language, 'long'),
+  })
+  const fromOptions = freeStartUnits.map(unitOption)
+  const toOptions = unitsFrom(Number(rangeFrom)).map(unitOption)
 
   let disabledReason: string | null = null
-  if (period === 'month') {
-    if (goals.some((g) => g.activityId === selectedActivityId && g.period === 'month')) {
-      disabledReason = t('goals.alreadyExistsHint')
-    }
-  } else if (effectiveWeekMode === 'linear') {
-    if (hasAnyWeekGoal) disabledReason = t('goals.linearBlockedHint')
-  } else if (hasLinearWeekGoal) {
+  if (effectiveKind === 'linear') {
+    if (hasAnyGoal) disabledReason = t('goals.linearBlockedHint')
+  } else if (hasLinear) {
     disabledReason = t('goals.linearExistsHint')
-  } else if (freeFromWeeks.length === 0) {
-    disabledReason = t('goals.allWeeksTaken')
+  } else if (freeStartUnits.length === 0) {
+    disabledReason = t('goals.allPeriodsTaken')
   }
   const canSubmit = disabledReason == null
 
@@ -109,11 +116,12 @@ export function AddGoalForm({ activities, goals, stepMinutes, onAdd }: AddGoalFo
     const value = parseFloat(hours)
     if (!value || value <= 0) return
 
-    if (period === 'week' && effectiveWeekMode === 'periodized') {
-      const from = Number(fromWeek)
-      const to = Number(toWeek)
+    if (effectiveKind === 'periodized') {
+      const from = Number(rangeFrom)
+      const to = Number(rangeTo)
       if (!from || !to || from > to) return
-      onAdd({ activityId: selectedActivityId, period: 'week', targetHours: value, weekStart: from, weekEnd: to })
+      const range = isWeek ? { weekStart: from, weekEnd: to } : { monthStart: from, monthEnd: to }
+      onAdd({ activityId: selectedActivityId, period, targetHours: value, ...range })
     } else {
       onAdd({ activityId: selectedActivityId, period, targetHours: value })
     }
@@ -141,28 +149,26 @@ export function AddGoalForm({ activities, goals, stepMinutes, onAdd }: AddGoalFo
         </div>
       </div>
 
-      {period === 'week' && (
-        <div className="add-goal-section">
-          <span className="settings-sheet-label">{t('goals.goalTypeLabel')}</span>
-          <div className="segmented" role="group" aria-label={t('goals.goalTypeLabel')}>
-            <button
-              type="button"
-              className={effectiveWeekMode === 'linear' ? 'active' : ''}
-              disabled={linearDisabled}
-              onClick={() => setWeekMode('linear')}
-            >
-              {t('goals.goalTypeLinear')}
-            </button>
-            <button
-              type="button"
-              className={effectiveWeekMode === 'periodized' ? 'active' : ''}
-              onClick={() => setWeekMode('periodized')}
-            >
-              {t('goals.goalTypePeriodized')}
-            </button>
-          </div>
+      <div className="add-goal-section">
+        <span className="settings-sheet-label">{t('goals.goalTypeLabel')}</span>
+        <div className="segmented" role="group" aria-label={t('goals.goalTypeLabel')}>
+          <button
+            type="button"
+            className={effectiveKind === 'linear' ? 'active' : ''}
+            disabled={linearDisabled}
+            onClick={() => setGoalKind('linear')}
+          >
+            {isWeek ? t('goals.goalTypeLinear') : t('goals.goalTypeLinearMonth')}
+          </button>
+          <button
+            type="button"
+            className={effectiveKind === 'periodized' ? 'active' : ''}
+            onClick={() => setGoalKind('periodized')}
+          >
+            {t('goals.goalTypePeriodized')}
+          </button>
         </div>
-      )}
+      </div>
 
       <div className="add-goal-section">
         <span className="settings-sheet-label">{t('goals.activityLabel')}</span>
@@ -187,26 +193,32 @@ export function AddGoalForm({ activities, goals, stepMinutes, onAdd }: AddGoalFo
         </div>
       </div>
 
-      {showWeekRange && (
+      {showRange && (
         <div className="add-goal-section">
-          <span className="settings-sheet-label">{t('goals.weekRangeLabel')}</span>
+          <span className="settings-sheet-label">
+            {isWeek ? t('goals.weekRangeLabel') : t('goals.monthRangeLabel')}
+          </span>
           <div className="wheel-picker-row">
             <div className="wheel-picker-col">
-              <span className="settings-sheet-label">{t('goals.fromWeekLabel')}</span>
+              <span className="settings-sheet-label">
+                {isWeek ? t('goals.fromWeekLabel') : t('goals.fromMonthLabel')}
+              </span>
               <WheelPicker
-                options={fromWeekOptions}
-                value={fromWeek}
-                onChange={setFromWeek}
-                ariaLabel={t('goals.fromWeekLabel')}
+                options={fromOptions}
+                value={rangeFrom}
+                onChange={setRangeFrom}
+                ariaLabel={isWeek ? t('goals.fromWeekLabel') : t('goals.fromMonthLabel')}
               />
             </div>
             <div className="wheel-picker-col">
-              <span className="settings-sheet-label">{t('goals.toWeekLabel')}</span>
+              <span className="settings-sheet-label">
+                {isWeek ? t('goals.toWeekLabel') : t('goals.toMonthLabel')}
+              </span>
               <WheelPicker
-                options={toWeekOptions}
-                value={toWeek}
-                onChange={setToWeek}
-                ariaLabel={t('goals.toWeekLabel')}
+                options={toOptions}
+                value={rangeTo}
+                onChange={setRangeTo}
+                ariaLabel={isWeek ? t('goals.toWeekLabel') : t('goals.toMonthLabel')}
               />
             </div>
           </div>

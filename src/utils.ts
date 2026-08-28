@@ -46,15 +46,32 @@ export function getISOWeek(date: Date): number {
   return 1 + Math.round((d.getTime() - firstThursday.getTime()) / (7 * 86400000))
 }
 
-// A weekly goal with a week range only counts during that inclusive range (recurring
-// every year); a weekly goal without a range counts every week.
+type GoalRangeFields = Pick<Goal, 'period' | 'weekStart' | 'weekEnd' | 'monthStart' | 'monthEnd'>
+
+// The inclusive [start, end] a periodized goal covers (ISO weeks 1–53 for a weekly goal,
+// calendar months 1–12 for a monthly one), or null for a linear (every-period) goal.
+export function goalRange(goal: GoalRangeFields): [number, number] | null {
+  if (goal.period === 'week') {
+    return goal.weekStart != null && goal.weekEnd != null ? [goal.weekStart, goal.weekEnd] : null
+  }
+  return goal.monthStart != null && goal.monthEnd != null ? [goal.monthStart, goal.monthEnd] : null
+}
+
+// A goal with a range only counts during that inclusive range (recurring every year);
+// a goal without a range counts every week / every month.
 export function isWeekGoalActive(goal: Goal, isoWeek: number): boolean {
   if (goal.weekStart == null || goal.weekEnd == null) return true
   return isoWeek >= goal.weekStart && isoWeek <= goal.weekEnd
 }
 
-// The one weekly goal that applies right now for a target (activityId === null = the total
-// goal). At most one can match because the goal form forbids two goals covering the same week.
+export function isMonthGoalActive(goal: Goal, month: number): boolean {
+  if (goal.monthStart == null || goal.monthEnd == null) return true
+  return month >= goal.monthStart && month <= goal.monthEnd
+}
+
+// The one goal of the given period that applies right now for a target (activityId === null
+// = the total goal). At most one matches because the goal form forbids two goals covering
+// the same week / month for a target.
 export function currentWeekGoal(
   goals: Goal[],
   activityId: string | null,
@@ -64,6 +81,23 @@ export function currentWeekGoal(
   return goals.find(
     (g) => g.period === 'week' && g.activityId === activityId && isWeekGoalActive(g, isoWeek),
   )
+}
+
+export function currentMonthGoal(
+  goals: Goal[],
+  activityId: string | null,
+  now: Date = new Date(),
+): Goal | undefined {
+  const month = now.getMonth() + 1
+  return goals.find(
+    (g) => g.period === 'month' && g.activityId === activityId && isMonthGoalActive(g, month),
+  )
+}
+
+// Localized month name for 1–12, capitalized (e.g. "Mars", "March", "Mar").
+export function formatMonthName(month: number, locale: string, style: 'short' | 'long' = 'long'): string {
+  const raw = new Date(2000, month - 1, 1).toLocaleDateString(locale, { month: style }).replace('.', '')
+  return raw.charAt(0).toUpperCase() + raw.slice(1)
 }
 
 // activityId === null sums across all activities (a "total" goal's progress).
