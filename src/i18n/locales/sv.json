@@ -63,6 +63,8 @@
     "activityLabel": "Aktivitet",
     "hoursLabel": "Antal timmar",
     "submit": "Lägg till mål",
+    "updateSubmit": "Uppdatera mål",
+    "editAria": "Redigera mål",
     "goalTypeLabel": "Måltyp",
     "goalTypeLinear": "Samtliga veckor",
     "goalTypeLinearMonth": "Samtliga månader",

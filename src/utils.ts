@@ -69,6 +69,21 @@ export function isMonthGoalActive(goal: Goal, month: number): boolean {
   return month >= goal.monthStart && month <= goal.monthEnd
 }
 
+// Whether `candidate` may NOT be saved for a target that already has `existing` goals of
+// the same period: a linear goal needs a clean slate; a block must not sit alongside a
+// linear goal or overlap another block. Pass `existing` already filtered to the target
+// (and, when editing, with the goal being edited removed).
+export function goalConflicts(existing: Goal[], candidate: GoalRangeFields): boolean {
+  const range = goalRange(candidate)
+  if (range == null) return existing.length > 0
+  if (existing.some((g) => goalRange(g) == null)) return true
+  const [start, end] = range
+  return existing.some((g) => {
+    const r = goalRange(g)
+    return r != null && start <= r[1] && r[0] <= end
+  })
+}
+
 // The one goal of the given period that applies right now for a target (activityId === null
 // = the total goal). At most one matches because the goal form forbids two goals covering
 // the same week / month for a target.

@@ -1002,6 +1002,11 @@
   color: var(--color-text-muted);
 }
 
+.add-goal-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .activity-picker {
   display: flex;
   flex-wrap: wrap;
@@ -1044,6 +1049,21 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.list-row.editing {
+  border-color: var(--color-accent);
+}
+
+.list-row-main {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  font: inherit;
 }
 
 .list-row-title {

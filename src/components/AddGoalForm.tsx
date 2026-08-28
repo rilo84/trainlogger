@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal, GoalPeriod, NewGoal } from '../types'
@@ -9,7 +9,12 @@ interface AddGoalFormProps {
   activities: Activity[]
   goals: Goal[]
   stepMinutes: number
+  // Set to edit an existing goal instead of creating one. The parent remounts the form
+  // (via key) when this changes, so the state initialisers below pick the values up.
+  editingGoal?: Goal
   onAdd: (goal: NewGoal) => void
+  onUpdate: (goal: NewGoal) => void
+  onCancelEdit: () => void
 }
 
 type GoalKind = 'linear' | 'periodized'
@@ -18,15 +23,33 @@ const TOTAL_VALUE = '__total__'
 const WEEKS = Array.from({ length: 53 }, (_, i) => i + 1)
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1)
 
-export function AddGoalForm({ activities, goals, stepMinutes, onAdd }: AddGoalFormProps) {
+export function AddGoalForm({
+  activities,
+  goals,
+  stepMinutes,
+  editingGoal,
+  onAdd,
+  onUpdate,
+  onCancelEdit,
+}: AddGoalFormProps) {
   const { t, i18n } = useTranslation()
   const hourOptions = useMemo(() => buildHourOptions(40, stepMinutes / 60), [stepMinutes])
-  const [period, setPeriod] = useState<GoalPeriod>('week')
-  const [goalKind, setGoalKind] = useState<GoalKind>('linear')
-  const [activityId, setActivityId] = useState(TOTAL_VALUE)
-  const [hours, setHours] = useState('2')
-  const [rangeFrom, setRangeFrom] = useState(() => String(getISOWeek(new Date())))
-  const [rangeTo, setRangeTo] = useState(rangeFrom)
+
+  const editRange = editingGoal ? goalRange(editingGoal) : null
+  const initUnit = editRange
+    ? editRange[0]
+    : editingGoal?.period === 'month'
+      ? new Date().getMonth() + 1
+      : getISOWeek(new Date())
+
+  const [period, setPeriod] = useState<GoalPeriod>(editingGoal?.period ?? 'week')
+  const [goalKind, setGoalKind] = useState<GoalKind>(
+    editingGoal ? (editRange ? 'periodized' : 'linear') : 'linear',
+  )
+  const [activityId, setActivityId] = useState(editingGoal ? (editingGoal.activityId ?? TOTAL_VALUE) : TOTAL_VALUE)
+  const [hours, setHours] = useState(editingGoal ? String(editingGoal.targetHours) : '2')
+  const [rangeFrom, setRangeFrom] = useState(String(initUnit))
+  const [rangeTo, setRangeTo] = useState(editRange ? String(editRange[1]) : String(initUnit))
 
   const selectedActivityId = activityId === TOTAL_VALUE ? null : activityId
   const isWeek = period === 'week'
@@ -34,8 +57,11 @@ export function AddGoalForm({ activities, goals, stepMinutes, onAdd }: AddGoalFo
   const currentUnit = isWeek ? getISOWeek(new Date()) : new Date().getMonth() + 1
 
   const goalsForActivity = useMemo(
-    () => goals.filter((g) => g.period === period && g.activityId === selectedActivityId),
-    [goals, period, selectedActivityId],
+    () =>
+      goals.filter(
+        (g) => g.period === period && g.activityId === selectedActivityId && g.id !== editingGoal?.id,
+      ),
+    [goals, period, selectedActivityId, editingGoal?.id],
   )
   const hasLinear = goalsForActivity.some((g) => goalRange(g) == null)
   const hasPeriodized = goalsForActivity.some((g) => goalRange(g) != null)
@@ -73,7 +99,11 @@ export function AddGoalForm({ activities, goals, stepMinutes, onAdd }: AddGoalFo
   const showRange = effectiveKind === 'periodized' && freeStartUnits.length > 0
 
   // Switching week <-> month makes the old index meaningless; start from "now" again.
+  // Skipped on the first render so an edited goal keeps its saved range.
+  const prevPeriod = useRef(period)
   useEffect(() => {
+    if (prevPeriod.current === period) return
+    prevPeriod.current = period
     setRangeFrom(String(currentUnit))
     setRangeTo(String(currentUnit))
   }, [period, currentUnit])
@@ -116,15 +146,19 @@ export function AddGoalForm({ activities, goals, stepMinutes, onAdd }: AddGoalFo
     const value = parseFloat(hours)
     if (!value || value <= 0) return
 
+    let payload: NewGoal
     if (effectiveKind === 'periodized') {
       const from = Number(rangeFrom)
       const to = Number(rangeTo)
       if (!from || !to || from > to) return
       const range = isWeek ? { weekStart: from, weekEnd: to } : { monthStart: from, monthEnd: to }
-      onAdd({ activityId: selectedActivityId, period, targetHours: value, ...range })
+      payload = { activityId: selectedActivityId, period, targetHours: value, ...range }
     } else {
-      onAdd({ activityId: selectedActivityId, period, targetHours: value })
+      payload = { activityId: selectedActivityId, period, targetHours: value }
     }
+
+    if (editingGoal) onUpdate(payload)
+    else onAdd(payload)
   }
 
   return (
@@ -232,9 +266,16 @@ export function AddGoalForm({ activities, goals, stepMinutes, onAdd }: AddGoalFo
 
       {disabledReason && <p className="add-goal-hint">{disabledReason}</p>}
 
-      <button type="submit" className="btn btn-primary" disabled={!canSubmit}>
-        {t('goals.submit')}
-      </button>
+      <div className="add-goal-actions">
+        <button type="submit" className="btn btn-primary" disabled={!canSubmit}>
+          {editingGoal ? t('goals.updateSubmit') : t('goals.submit')}
+        </button>
+        {editingGoal && (
+          <button type="button" className="btn btn-ghost" onClick={onCancelEdit}>
+            {t('common.cancel')}
+          </button>
+        )}
+      </div>
     </form>
   )
 }

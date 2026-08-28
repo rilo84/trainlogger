@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity, AppSettings, Goal, NewGoal } from '../types'
 import { formatMonthName } from '../utils'
@@ -8,12 +9,21 @@ interface GoalsPageProps {
   goals: Goal[]
   settings: AppSettings
   onAdd: (goal: NewGoal) => void
+  onUpdate: (goalId: string, goal: NewGoal) => void
   onDelete: (goalId: string) => void
 }
 
-export function GoalsPage({ activities, goals, settings, onAdd, onDelete }: GoalsPageProps) {
+export function GoalsPage({ activities, goals, settings, onAdd, onUpdate, onDelete }: GoalsPageProps) {
   const { t, i18n } = useTranslation()
   const nameById = new Map(activities.map((a) => [a.id, a.name]))
+
+  const [editingGoalId, setEditingGoalId] = useState<string | null>(null)
+  const editingGoal = editingGoalId ? (goals.find((g) => g.id === editingGoalId) ?? null) : null
+  const formRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (editingGoalId) formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [editingGoalId])
 
   return (
     <>
@@ -25,7 +35,21 @@ export function GoalsPage({ activities, goals, settings, onAdd, onDelete }: Goal
       </header>
 
       <div className="page-body">
-        <AddGoalForm activities={activities} goals={goals} stepMinutes={settings.hourStepMinutes} onAdd={onAdd} />
+        <div ref={formRef}>
+          <AddGoalForm
+            key={editingGoal?.id ?? 'new'}
+            activities={activities}
+            goals={goals}
+            stepMinutes={settings.hourStepMinutes}
+            editingGoal={editingGoal ?? undefined}
+            onAdd={onAdd}
+            onUpdate={(updated) => {
+              onUpdate(editingGoal!.id, updated)
+              setEditingGoalId(null)
+            }}
+            onCancelEdit={() => setEditingGoalId(null)}
+          />
+        </div>
 
         {goals.length === 0 ? (
           <div className="empty-state">
@@ -34,8 +58,13 @@ export function GoalsPage({ activities, goals, settings, onAdd, onDelete }: Goal
         ) : (
           <div className="list">
             {goals.map((goal) => (
-              <div className="list-row" key={goal.id}>
-                <div>
+              <div className={`list-row ${goal.id === editingGoalId ? 'editing' : ''}`} key={goal.id}>
+                <button
+                  type="button"
+                  className="list-row-main"
+                  aria-label={t('goals.editAria')}
+                  onClick={() => setEditingGoalId((cur) => (cur === goal.id ? null : goal.id))}
+                >
                   <div className="list-row-title">
                     {goal.activityId === null
                       ? t('goals.allActivities')
@@ -57,8 +86,15 @@ export function GoalsPage({ activities, goals, settings, onAdd, onDelete }: Goal
                       </>
                     )}
                   </div>
-                </div>
-                <button className="btn-icon" aria-label={t('goals.deleteAria')} onClick={() => onDelete(goal.id)}>
+                </button>
+                <button
+                  className="btn-icon"
+                  aria-label={t('goals.deleteAria')}
+                  onClick={() => {
+                    if (editingGoalId === goal.id) setEditingGoalId(null)
+                    onDelete(goal.id)
+                  }}
+                >
                   ×
                 </button>
               </div>

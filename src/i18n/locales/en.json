@@ -63,6 +63,8 @@
     "activityLabel": "Activity",
     "hoursLabel": "Number of hours",
     "submit": "Add goal",
+    "updateSubmit": "Update goal",
+    "editAria": "Edit goal",
     "goalTypeLabel": "Goal type",
     "goalTypeLinear": "All weeks",
     "goalTypeLinearMonth": "All months",
