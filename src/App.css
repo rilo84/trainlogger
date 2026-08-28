@@ -902,6 +902,35 @@
   flex-shrink: 0;
 }
 
+.chart-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chart-filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+}
+
+.chart-filter-chip:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
+}
+
+.chart-filter-chip.active {
+  color: var(--color-text);
+  border-color: var(--color-accent);
+  background: var(--color-surface-hover);
+}
+
 .chart-goal-legend {
   display: flex;
   flex-wrap: wrap;

@@ -7,7 +7,6 @@ import { SERIES_COLORS, OTHER_COLOR, buildActivityColorMap } from '../activityCo
 
 type ChartType = 'bar' | 'line'
 type Granularity = 'week' | 'month'
-type ViewMode = 'activity' | 'total'
 
 const MAX_SERIES = SERIES_COLORS.length
 
@@ -93,6 +92,7 @@ function buildChartData(
   locale: string,
   weekAbbrev: string,
   otherLabel: string,
+  focusedActivityId: string | null,
 ): { series: Series[]; points: ChartPoint[]; windowLabel: string } {
   const bucketMap = new Map<string, { start: Date; totals: Map<string, number> }>()
 
@@ -139,9 +139,18 @@ function buildChartData(
   // Rank decides which activities get their own bar vs. collapse into "Other" (the
   // busiest ones win a slot); the visible series are then shown in alphabetical
   // order. Colour comes from the stable per-activity map so it matches the cards.
+  // When one activity is focused the chart shows only its series.
   let series: Series[]
   let otherIds: string[] = []
-  if (rankedIds.length <= MAX_SERIES) {
+  if (focusedActivityId) {
+    series = [
+      {
+        id: focusedActivityId,
+        label: nameById.get(focusedActivityId) ?? '',
+        color: colorMap.get(focusedActivityId) ?? OTHER_COLOR,
+      },
+    ]
+  } else if (rankedIds.length <= MAX_SERIES) {
     series = [...rankedIds]
       .sort(byName)
       .map((id) => ({ id, label: nameById.get(id) ?? '', color: colorMap.get(id) ?? OTHER_COLOR }))
@@ -209,7 +218,8 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
   const locale = i18n.language === 'en' ? 'en-US' : 'sv-SE'
   const [chartType, setChartType] = useState<ChartType>('bar')
   const [granularity, setGranularity] = useState<Granularity>('week')
-  const [viewMode, setViewMode] = useState<ViewMode>('total')
+  // null = every activity stacked together (the default); an id = show only that activity.
+  const [focusedActivityId, setFocusedActivityId] = useState<string | null>(null)
   const [monthOffset, setMonthOffset] = useState(0)
   const [yearOffset, setYearOffset] = useState(0)
   const [showTable, setShowTable] = useState(false)
@@ -243,11 +253,21 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
         locale,
         t('chart.weekAbbrev'),
         t('chart.otherSeries'),
+        focusedActivityId,
       ),
-    [activities, granularity, monthOffset, yearOffset, locale, t],
+    [activities, granularity, monthOffset, yearOffset, locale, t, focusedActivityId],
   )
 
   const hasAnyLogs = activities.some((a) => a.logs.length > 0)
+  const colorMap = useMemo(() => buildActivityColorMap(activities), [activities])
+  const filterActivities = useMemo(() => activities.filter((a) => a.logs.length > 0), [activities])
+
+  // Drop the focus if that activity gets deleted while selected.
+  useEffect(() => {
+    if (focusedActivityId && !activities.some((a) => a.id === focusedActivityId)) {
+      setFocusedActivityId(null)
+    }
+  }, [activities, focusedActivityId])
 
   function goToPrevMonth() {
     setMonthOffset((v) => v - 1)
@@ -270,15 +290,15 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
     () =>
       goals.filter((g) => {
         if (g.period !== granularity) return false
-        return viewMode === 'total' ? g.activityId === null : g.activityId !== null && nameById.has(g.activityId)
+        return focusedActivityId ? g.activityId === focusedActivityId : g.activityId === null
       }),
-    [goals, granularity, nameById, viewMode],
+    [goals, granularity, focusedActivityId],
   )
 
   const periodTotals = points.map((p) => p.values.reduce((sum, v) => sum + v, 0))
   const maxValue = Math.max(
     0,
-    ...(viewMode === 'total' ? periodTotals : points.flatMap((p) => p.values)),
+    ...periodTotals,
     ...relevantGoals.map((g) => g.targetHours),
   )
   const yMax = niceMax(maxValue || 1)
@@ -315,13 +335,12 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
   }
 
   const hoveredPoint = hoverIndex !== null ? points[hoverIndex] : null
-  const showLegend = !(viewMode === 'total' && chartType === 'line')
 
   return (
     <div className="chart-card">
       <div className="chart-controls">
         <div className="chart-title-group">
-          <h2>{viewMode === 'total' ? t('chart.titleTotal') : t('chart.titlePerActivity')}</h2>
+          <h2>{granularity === 'week' ? t('chart.monthOverview') : t('chart.yearOverview')}</h2>
           <div className="chart-period-nav">
             <span className="chart-period-nav-label">
               {granularity === 'week' ? t('chart.monthLabel') : t('chart.yearLabel')}
@@ -378,29 +397,6 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
             </div>
 
             <div className="settings-sheet-row">
-              <span className="settings-sheet-label">{t('chart.viewLabel')}</span>
-              <div className="segmented" role="group" aria-label={t('chart.viewLabel')}>
-                <button
-                  type="button"
-                  className={viewMode === 'activity' ? 'active' : ''}
-                  onClick={() => {
-                    setViewMode('activity')
-                    setChartType('bar')
-                  }}
-                >
-                  {t('chart.viewActivity')}
-                </button>
-                <button
-                  type="button"
-                  className={viewMode === 'total' ? 'active' : ''}
-                  onClick={() => setViewMode('total')}
-                >
-                  {t('chart.viewTotal')}
-                </button>
-              </div>
-            </div>
-
-            <div className="settings-sheet-row">
               <span className="settings-sheet-label">{t('chart.typeLabel')}</span>
               <div className="segmented" role="group" aria-label={t('chart.typeLabel')}>
                 <button
@@ -413,7 +409,6 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                 <button
                   type="button"
                   className={chartType === 'line' ? 'active' : ''}
-                  disabled={viewMode === 'activity'}
                   onClick={() => setChartType('line')}
                 >
                   {t('chart.typeLine')}
@@ -499,60 +494,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
               />
             )}
 
-            {chartType === 'bar' && viewMode === 'activity'
-              ? points.map((point, pointIndex) => {
-                  const bandX = MARGIN.left + bandWidth * pointIndex
-                  const gap = 2
-                  const barSlot = Math.min(24, (bandWidth - 8 - (series.length - 1) * gap) / series.length)
-                  const totalWidth = series.length * barSlot + (series.length - 1) * gap
-                  const startX = bandX + bandWidth / 2 - totalWidth / 2
-                  const baseline = MARGIN.top + PLOT_HEIGHT
-                  return (
-                    <g key={point.key}>
-                      {series.map((s, seriesIndex) => {
-                        const value = point.values[seriesIndex]
-                        const barX = startX + seriesIndex * (barSlot + gap)
-                        const goal = relevantGoals.find((g) => g.activityId === s.id)
-                        return (
-                          <g key={s.id}>
-                            {value > 0 &&
-                              (() => {
-                                const barY = yScale(value)
-                                return (
-                                  <path
-                                    d={roundedTopRectPath(barX, barY, barSlot, baseline - barY, 4)}
-                                    fill={s.color}
-                                  />
-                                )
-                              })()}
-                            {goal &&
-                              (() => {
-                                const { color, passed } = resolveGoalColor(
-                                  getGoalActual(goal, point),
-                                  goal.targetHours,
-                                  s.color,
-                                )
-                                const y = yScale(goal.targetHours)
-                                return (
-                                  <line
-                                    x1={barX}
-                                    x2={barX + barSlot}
-                                    y1={y}
-                                    y2={y}
-                                    className="chart-goal-line"
-                                    style={{ stroke: color, strokeDasharray: passed ? 'none' : '4 3' }}
-                                  />
-                                )
-                              })()}
-                          </g>
-                        )
-                      })}
-                    </g>
-                  )
-                })
-              : null}
-
-            {chartType === 'bar' && viewMode === 'total'
+            {chartType === 'bar'
               ? points.map((point, pointIndex) => {
                   const bandX = MARGIN.left + bandWidth * pointIndex
                   const barWidth = Math.min(24, bandWidth - 8)
@@ -571,7 +513,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                     const yBottom = yScale(bottom)
                     return { s: seg.s, yTop, yBottom, isTopmost }
                   })
-                  const goal = relevantGoals.find((g) => g.activityId === null)
+                  const goal = relevantGoals[0]
                   return (
                     <g key={point.key}>
                       {drawn.map(({ s, yTop, yBottom, isTopmost }) =>
@@ -597,7 +539,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                           const { color, passed } = resolveGoalColor(
                             periodTotals[pointIndex],
                             goal.targetHours,
-                            'var(--color-danger)',
+                            focusedActivityId ? series[0]?.color ?? 'var(--color-danger)' : 'var(--color-danger)',
                           )
                           const y = yScale(goal.targetHours)
                           return (
@@ -616,33 +558,10 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                 })
               : null}
 
-            {chartType === 'line' && viewMode === 'activity'
-              ? series.map((s, seriesIndex) => {
-                  const linePoints = points
-                    .map((point, i) => {
-                      const x = MARGIN.left + bandWidth * i + bandWidth / 2
-                      const y = yScale(point.values[seriesIndex])
-                      return `${x},${y}`
-                    })
-                    .join(' ')
-                  return (
-                    <g key={s.id}>
-                      <polyline points={linePoints} fill="none" stroke={s.color} strokeWidth={2} />
-                      {points.map((point, i) => {
-                        const x = MARGIN.left + bandWidth * i + bandWidth / 2
-                        const y = yScale(point.values[seriesIndex])
-                        return (
-                          <circle key={point.key} cx={x} cy={y} r={4} fill={s.color} className="chart-dot" />
-                        )
-                      })}
-                    </g>
-                  )
-                })
-              : null}
-
-            {chartType === 'line' && viewMode === 'total'
+            {chartType === 'line'
               ? (() => {
-                  const totalLinePoints = periodTotals
+                  const lineColor = focusedActivityId ? series[0]?.color ?? SERIES_COLORS[0] : SERIES_COLORS[0]
+                  const linePoints = periodTotals
                     .map((total, i) => {
                       const x = MARGIN.left + bandWidth * i + bandWidth / 2
                       const y = yScale(total)
@@ -651,12 +570,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                     .join(' ')
                   return (
                     <g>
-                      <polyline
-                        points={totalLinePoints}
-                        fill="none"
-                        stroke={SERIES_COLORS[0]}
-                        strokeWidth={2}
-                      />
+                      <polyline points={linePoints} fill="none" stroke={lineColor} strokeWidth={2} />
                       {periodTotals.map((total, i) => {
                         const x = MARGIN.left + bandWidth * i + bandWidth / 2
                         const y = yScale(total)
@@ -666,7 +580,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                             cx={x}
                             cy={y}
                             r={4}
-                            fill={SERIES_COLORS[0]}
+                            fill={lineColor}
                             className="chart-dot"
                           />
                         )
@@ -730,16 +644,25 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
         </div>
       )}
 
-      {!showTable && showLegend && (
-        <div className="chart-legend">
-          {series.map((s) => (
-            <div className="chart-legend-item" key={s.id}>
-              <span
-                className={chartType === 'bar' ? 'chart-legend-swatch' : 'chart-legend-line'}
-                style={chartType === 'bar' ? { backgroundColor: s.color } : { backgroundColor: s.color }}
-              />
-              <span>{s.label}</span>
-            </div>
+      {filterActivities.length > 0 && (
+        <div className="chart-filter" role="group" aria-label={t('chart.filterAria')}>
+          <button
+            type="button"
+            className={`chart-filter-chip ${focusedActivityId === null ? 'active' : ''}`}
+            onClick={() => setFocusedActivityId(null)}
+          >
+            {t('chart.viewTotal')}
+          </button>
+          {filterActivities.map((a) => (
+            <button
+              type="button"
+              key={a.id}
+              className={`chart-filter-chip ${focusedActivityId === a.id ? 'active' : ''}`}
+              onClick={() => setFocusedActivityId((cur) => (cur === a.id ? null : a.id))}
+            >
+              <span className="chart-legend-swatch" style={{ backgroundColor: colorMap.get(a.id) }} />
+              <span>{a.name}</span>
+            </button>
           ))}
         </div>
       )}

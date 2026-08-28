@@ -61,12 +61,13 @@ Forms validate inline and **silently `return` on invalid input** (empty name, no
 
 `src/components/ActivityHoursChart.tsx` is by far the largest and most intricate file — a hand-rolled SVG chart engine with no charting library. It supports:
 
-- **bar or line** rendering × **per-activity or total** view (`total` stacks activities into one bar / sums into one line; `line` is disabled in per-activity view) × **week or month** granularity;
+- **bar or line** rendering (settings sheet) × **week or month** granularity; the card title follows granularity — "Månadsöversikt" for week, "Årsöversikt" for month;
+- a **focus filter** (`focusedActivityId` state): a chip row under the chart with "Samtliga aktiviteter" (default, `null`) plus one chip per logged activity. `null` = every activity stacked into one bar / summed into one line; an id = only that activity's bars/line. Clicking the active chip again clears the focus. The chip row doubles as the colour legend and stays visible in table view.
 - period navigation (previous/next month for the week view, year for the month view; "next" is clamped at offset 0 = current);
-- **goal overlays**: dashed reference lines when a period is under target, solid `--color-accent` when met, computed via `getGoalActual` (which again treats `activityId === null` as the sum across activities);
+- **goal overlays**: dashed reference lines when a period is under target, solid `--color-accent` when met, computed via `getGoalActual` (which treats `activityId === null` as the sum across activities). `relevantGoals` shows the total goal when unfocused, the focused activity's goal when focused;
 - a hover band + absolutely-positioned tooltip, a "show as table" toggle, and `ResizeObserver`-driven responsive width.
 
-`buildChartData` is the core transform: it buckets logs by week-start/month-start ISO keys, generates the *expected* buckets for the visible window (so empty weeks/months still render), ranks activities by hours in the window, keeps at most 8 series with their own bar and rolls the rest into a grey `__other__` bucket. The busiest activities win the bar slots, but the visible series are then ordered **alphabetically** for display (legend, stack order, table columns). Week labels use real ISO-8601 week numbers (`getISOWeekLabel`).
+`buildChartData` is the core transform: it buckets logs by week-start/month-start ISO keys, generates the *expected* buckets for the visible window (so empty weeks/months still render). When `focusedActivityId` is set it returns a single series; otherwise it ranks activities by hours in the window, keeps at most 8 series with their own bar (busiest win the slots) and rolls the rest into a grey `__other__` bucket. Either way the visible series are ordered **alphabetically** for display (stack order, table columns). Week labels use real ISO-8601 week numbers (`getISOWeekLabel`).
 
 `OverviewPage` sorts `activities` alphabetically once (`sortedActivities`, locale-aware) and passes that single ordering to the chart, the goal-progress cards, the `ActivityCard` grid, and the log-activity picker — so cards and chart series line up.
 
