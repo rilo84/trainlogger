@@ -133,16 +133,24 @@ function buildChartData(
     .sort((a, b) => b.total - a.total)
     .map((a) => a.id)
 
-  // Rank decides which activities get their own bar vs. collapse into "Other";
-  // the colour itself comes from the stable per-activity map so it matches the cards.
+  const byName = (a: string, b: string) =>
+    (nameById.get(a) ?? '').localeCompare(nameById.get(b) ?? '', locale)
+
+  // Rank decides which activities get their own bar vs. collapse into "Other" (the
+  // busiest ones win a slot); the visible series are then shown in alphabetical
+  // order. Colour comes from the stable per-activity map so it matches the cards.
   let series: Series[]
   let otherIds: string[] = []
   if (rankedIds.length <= MAX_SERIES) {
-    series = rankedIds.map((id) => ({ id, label: nameById.get(id) ?? '', color: colorMap.get(id) ?? OTHER_COLOR }))
+    series = [...rankedIds]
+      .sort(byName)
+      .map((id) => ({ id, label: nameById.get(id) ?? '', color: colorMap.get(id) ?? OTHER_COLOR }))
   } else {
     const head = rankedIds.slice(0, MAX_SERIES - 1)
     otherIds = rankedIds.slice(MAX_SERIES - 1)
-    series = head.map((id) => ({ id, label: nameById.get(id) ?? '', color: colorMap.get(id) ?? OTHER_COLOR }))
+    series = [...head]
+      .sort(byName)
+      .map((id) => ({ id, label: nameById.get(id) ?? '', color: colorMap.get(id) ?? OTHER_COLOR }))
     series.push({ id: '__other__', label: otherLabel, color: OTHER_COLOR })
   }
 

@@ -66,7 +66,9 @@ Forms validate inline and **silently `return` on invalid input** (empty name, no
 - **goal overlays**: dashed reference lines when a period is under target, solid `--color-accent` when met, computed via `getGoalActual` (which again treats `activityId === null` as the sum across activities);
 - a hover band + absolutely-positioned tooltip, a "show as table" toggle, and `ResizeObserver`-driven responsive width.
 
-`buildChartData` is the core transform: it buckets logs by week-start/month-start ISO keys, generates the *expected* buckets for the visible window (so empty weeks/months still render), ranks activities by hours in the window, keeps at most 8 series with their own bar and rolls the rest into a grey `__other__` bucket. Week labels use real ISO-8601 week numbers (`getISOWeekLabel`).
+`buildChartData` is the core transform: it buckets logs by week-start/month-start ISO keys, generates the *expected* buckets for the visible window (so empty weeks/months still render), ranks activities by hours in the window, keeps at most 8 series with their own bar and rolls the rest into a grey `__other__` bucket. The busiest activities win the bar slots, but the visible series are then ordered **alphabetically** for display (legend, stack order, table columns). Week labels use real ISO-8601 week numbers (`getISOWeekLabel`).
+
+`OverviewPage` sorts `activities` alphabetically once (`sortedActivities`, locale-aware) and passes that single ordering to the chart, the goal-progress cards, the `ActivityCard` grid, and the log-activity picker — so cards and chart series line up.
 
 Series colors come from `src/activityColors.ts` — `buildActivityColorMap(activities)` assigns `SERIES_COLORS` (validated for contrast/CVD on the dark surface) by each activity's index in the stored array (creation order), cycling past 8. This map is the single source of truth for "the color of an activity": the chart uses rank only to decide bar-vs-`Other`, not to pick the color, so an activity keeps the same color across time-window navigation **and** the `ActivityCard` border (`color` prop, set from the same map in `OverviewPage`) always matches its chart bar.
 

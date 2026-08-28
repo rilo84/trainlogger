@@ -16,10 +16,10 @@ export const SERIES_COLORS = [
 
 export const OTHER_COLOR = '#898781'
 
-// Stable activity -> colour assignment by creation order (the stored array order,
-// since new activities are appended). The palette cycles past 8 activities.
-// "Stable" means an activity keeps its colour no matter which time window the
-// chart is showing, so a card border and its chart bar always agree.
+// Activity -> colour assignment by the activity's position in the given array,
+// cycling the palette past 8 activities. Callers pass a consistently ordered list
+// (the overview sorts alphabetically) so that the colour does not depend on the
+// chart's current time window - a card border and its chart bar always agree.
 export function buildActivityColorMap(activities: Activity[]): Map<string, string> {
   const map = new Map<string, string>()
   activities.forEach((activity, index) => {

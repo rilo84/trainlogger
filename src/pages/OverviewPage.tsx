@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity, AppSettings, Goal } from '../types'
 import { buildActivityColorMap } from '../activityColors'
@@ -30,9 +30,14 @@ export function OverviewPage({
   onDeleteLog,
   onNavigateToActivities,
 }: OverviewPageProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [logForm, setLogForm] = useState<LogFormState>({ open: false })
-  const activityColors = buildActivityColorMap(activities)
+  // The overview shows activities (chart series and cards alike) in alphabetical order.
+  const sortedActivities = useMemo(
+    () => [...activities].sort((a, b) => a.name.localeCompare(b.name, i18n.language)),
+    [activities, i18n.language],
+  )
+  const activityColors = buildActivityColorMap(sortedActivities)
 
   return (
     <>
@@ -50,19 +55,19 @@ export function OverviewPage({
       </header>
 
       <div className="page-body">
-        {goals.length > 0 && <TotalGoalsProgress activities={activities} goals={goals} />}
+        {goals.length > 0 && <TotalGoalsProgress activities={sortedActivities} goals={goals} />}
 
         {goals.length > 0 && (
           <PerActivityGoalsProgress
-            activities={activities}
+            activities={sortedActivities}
             goals={goals}
             onSelectActivity={(activityId) => setLogForm({ open: true, activityId })}
           />
         )}
 
-        {activities.length > 0 && <ActivityHoursChart activities={activities} goals={goals} />}
+        {sortedActivities.length > 0 && <ActivityHoursChart activities={sortedActivities} goals={goals} />}
 
-        {activities.length === 0 ? (
+        {sortedActivities.length === 0 ? (
           <div className="empty-state">
             <button type="button" className="btn btn-primary" onClick={onNavigateToActivities}>
               {t('overview.addActivityButton')}
@@ -70,7 +75,7 @@ export function OverviewPage({
           </div>
         ) : (
           <div className="activity-grid">
-            {activities.map((activity) => (
+            {sortedActivities.map((activity) => (
               <ActivityCard
                 key={activity.id}
                 activity={activity}
@@ -87,7 +92,7 @@ export function OverviewPage({
 
       {logForm.open && (
         <LogActivityForm
-          activities={activities}
+          activities={sortedActivities}
           stepMinutes={settings.hourStepMinutes}
           initialActivityId={logForm.activityId}
           onLog={onLogHours}
