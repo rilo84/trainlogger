@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
-import { currentPeriodActualHours } from '../utils'
+import { currentPeriodActualHours, formatHours } from '../utils'
 import { GoalRing } from './GoalRing'
 
 interface PerActivityGoalsProgressProps {
@@ -30,22 +30,26 @@ export function PerActivityGoalsProgress({ activities, goals, onSelectActivity }
       </div>
 
       <div className="per-activity-goals-grid">
-        {entries.map(({ activity, weekGoal }) => (
-          <button
-            type="button"
-            className="per-activity-goals-item"
-            key={activity.id}
-            onClick={() => onSelectActivity(activity.id)}
-          >
-            <div className="per-activity-goals-name">{activity.name}</div>
-            <GoalRing
-              label={t('common.weeklyGoal')}
-              actual={currentPeriodActualHours([activity], 'week', activity.id)}
-              target={weekGoal!.targetHours}
-              size={62}
-            />
-          </button>
-        ))}
+        {entries.map(({ activity, weekGoal }) => {
+          const actual = currentPeriodActualHours([activity], 'week', activity.id)
+          const target = weekGoal!.targetHours
+          return (
+            <button
+              type="button"
+              className="per-activity-goals-item"
+              key={activity.id}
+              onClick={() => onSelectActivity(activity.id)}
+            >
+              <div className="per-activity-goals-name">{activity.name}</div>
+              <GoalRing
+                label={`${formatHours(actual)} / ${formatHours(target)} h`}
+                actual={actual}
+                target={target}
+                size={62}
+              />
+            </button>
+          )
+        })}
       </div>
     </div>
   )
