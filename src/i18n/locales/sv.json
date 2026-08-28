@@ -48,7 +48,10 @@
     "emptyList": "Inga aktiviteter än.",
     "newActivityPlaceholder": "Ny aktivitet, t.ex. Löpning",
     "nameAria": "Aktivitetsnamn",
-    "deleteAria": "Ta bort {{name}}"
+    "duplicateHint": "Det finns redan en aktivitet med det namnet.",
+    "deleteAria": "Ta bort {{name}}",
+    "deleteTitle": "Ta bort aktivitet?",
+    "deleteWarning": "All loggad tid och alla mål för ”{{name}}” tas bort permanent. Det går inte att ångra."
   },
   "goals": {
     "emptyHint": "Sätt upp mål för hur många timmar du vill träna",

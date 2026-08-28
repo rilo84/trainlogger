@@ -394,7 +394,15 @@
 
 .add-activity-form {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
+}
+
+.add-activity-hint {
+  width: 100%;
+  margin-top: -4px;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
 }
 
 .add-activity-form input {
@@ -1003,6 +1011,17 @@
 }
 
 .add-goal-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.confirm-text {
+  color: var(--color-text);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.confirm-actions {
   display: flex;
   gap: 8px;
 }

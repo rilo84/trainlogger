@@ -112,6 +112,15 @@ input {
   color: var(--color-text);
 }
 
+.btn-danger {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  filter: brightness(0.92);
+}
+
 .btn-small {
   padding: 8px 14px;
   font-size: 0.85rem;

@@ -1,19 +1,24 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { Activity } from '../types'
 
 interface AddActivityFormProps {
+  activities: Activity[]
   onAdd: (name: string) => void
 }
 
-export function AddActivityForm({ onAdd }: AddActivityFormProps) {
+export function AddActivityForm({ activities, onAdd }: AddActivityFormProps) {
   const { t } = useTranslation()
   const [name, setName] = useState('')
 
+  const trimmed = name.trim()
+  const isDuplicate =
+    trimmed !== '' && activities.some((a) => a.name.trim().toLowerCase() === trimmed.toLowerCase())
+
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    const trimmed = name.trim()
-    if (!trimmed) return
+    if (!trimmed || isDuplicate) return
     onAdd(trimmed)
     setName('')
   }
@@ -27,9 +32,10 @@ export function AddActivityForm({ onAdd }: AddActivityFormProps) {
         placeholder={t('activities.newActivityPlaceholder')}
         aria-label={t('activities.nameAria')}
       />
-      <button type="submit" className="btn btn-primary">
+      <button type="submit" className="btn btn-primary" disabled={isDuplicate}>
         {t('common.add')}
       </button>
+      {isDuplicate && <p className="add-activity-hint">{t('activities.duplicateHint')}</p>}
     </form>
   )
 }

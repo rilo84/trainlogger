@@ -48,7 +48,10 @@
     "emptyList": "No activities yet.",
     "newActivityPlaceholder": "New activity, e.g. Running",
     "nameAria": "Activity name",
-    "deleteAria": "Delete {{name}}"
+    "duplicateHint": "An activity with that name already exists.",
+    "deleteAria": "Delete {{name}}",
+    "deleteTitle": "Remove activity?",
+    "deleteWarning": "All logged time and every goal for “{{name}}” will be permanently deleted. This can’t be undone."
   },
   "goals": {
     "emptyHint": "Set goals for how many hours you want to train",

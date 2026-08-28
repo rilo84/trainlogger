@@ -98,7 +98,11 @@ function App() {
   }, [settings.theme])
 
   function handleAddActivity(name: string) {
-    setActivities((prev) => [...prev, { id: createId(), name, logs: [] }])
+    setActivities((prev) => {
+      const exists = prev.some((a) => a.name.trim().toLowerCase() === name.trim().toLowerCase())
+      if (exists) return prev
+      return [...prev, { id: createId(), name, logs: [] }]
+    })
   }
 
   function handleDeleteActivity(activityId: string) {
