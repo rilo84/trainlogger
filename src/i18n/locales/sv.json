@@ -88,6 +88,8 @@
   },
   "activityCard": {
     "totalLabel": "totalt",
+    "thisWeek": "denna vecka",
+    "thisMonth": "denna månad",
     "deleteLogAria": "Ta bort logg {{date}}, {{hours}} h",
     "deleteLogTitle": "Ta bort loggad tid?",
     "deleteLogWarning": "Är du säker på att du vill ta bort {{hours}} som loggades {{date}}?",

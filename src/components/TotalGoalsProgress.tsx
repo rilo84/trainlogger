@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
-import { currentPeriodActualHours, currentWeekGoal, currentMonthGoal } from '../utils'
+import { currentPeriodActualHours, currentWeekGoal, currentMonthGoal, formatHours } from '../utils'
 import { GoalRing } from './GoalRing'
 
 interface TotalGoalsProgressProps {
@@ -16,6 +16,8 @@ export function TotalGoalsProgress({ activities, goals }: TotalGoalsProgressProp
   if (!weekGoal && !monthGoal) return null
 
   const ringSize = 62
+  const weekActual = currentPeriodActualHours(activities, 'week', null)
+  const monthActual = currentPeriodActualHours(activities, 'month', null)
 
   return (
     <div className="chart-card">
@@ -27,20 +29,26 @@ export function TotalGoalsProgress({ activities, goals }: TotalGoalsProgressProp
 
       <div className="goal-rings-row">
         {weekGoal && (
-          <GoalRing
-            label={t('common.weeklyGoal')}
-            actual={currentPeriodActualHours(activities, 'week', null)}
-            target={weekGoal.targetHours}
-            size={ringSize}
-          />
+          <div className="goal-ring-group">
+            <div className="per-activity-goals-name">{t('common.weeklyGoal')}</div>
+            <GoalRing
+              label={`${formatHours(weekActual)} / ${formatHours(weekGoal.targetHours)} h`}
+              actual={weekActual}
+              target={weekGoal.targetHours}
+              size={ringSize}
+            />
+          </div>
         )}
         {monthGoal && (
-          <GoalRing
-            label={t('common.monthlyGoal')}
-            actual={currentPeriodActualHours(activities, 'month', null)}
-            target={monthGoal.targetHours}
-            size={ringSize}
-          />
+          <div className="goal-ring-group">
+            <div className="per-activity-goals-name">{t('common.monthlyGoal')}</div>
+            <GoalRing
+              label={`${formatHours(monthActual)} / ${formatHours(monthGoal.targetHours)} h`}
+              actual={monthActual}
+              target={monthGoal.targetHours}
+              size={ringSize}
+            />
+          </div>
         )}
       </div>
     </div>

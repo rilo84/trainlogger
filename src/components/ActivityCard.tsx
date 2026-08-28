@@ -1,13 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal, LogEntry } from '../types'
-import {
-  sumHours,
-  currentPeriodActualHours,
-  currentWeekGoal,
-  currentMonthGoal,
-  formatHoursMinutes,
-} from '../utils'
+import { currentPeriodActualHours, currentWeekGoal, currentMonthGoal, formatHoursMinutes } from '../utils'
 import { LogHoursForm } from './LogHoursForm'
 import { GoalRing } from './GoalRing'
 import { ConfirmDialog } from './ConfirmDialog'
@@ -29,7 +23,8 @@ export function ActivityCard({ activity, goals, color, stepMinutes, onLogHours, 
   const [isExpanded, setIsExpanded] = useState(false)
   const [pendingDeleteLog, setPendingDeleteLog] = useState<LogEntry | null>(null)
 
-  const totalHours = sumHours(activity.logs)
+  const weekHours = currentPeriodActualHours([activity], 'week', activity.id)
+  const monthHours = currentPeriodActualHours([activity], 'month', activity.id)
   const sortedLogs = [...activity.logs].sort((a, b) => b.date.localeCompare(a.date))
   const visibleLogs = isExpanded ? sortedLogs : sortedLogs.slice(0, COLLAPSED_LOG_COUNT)
   const hasMoreLogs = sortedLogs.length > COLLAPSED_LOG_COUNT
@@ -43,9 +38,17 @@ export function ActivityCard({ activity, goals, color, stepMinutes, onLogHours, 
         <h3>{activity.name}</h3>
       </div>
 
-      <div className="activity-total">
-        <span className="activity-total-value">{formatHoursMinutes(totalHours)}</span>
-        <span className="activity-total-label">{t('activityCard.totalLabel')}</span>
+      <div className="activity-summary">
+        <div className="activity-total">
+          <span className="activity-total-value">{formatHoursMinutes(weekHours)}</span>
+          <span className="activity-total-label">{t('activityCard.thisWeek')}</span>
+        </div>
+        <div className="activity-total">
+          <span className="activity-total-value activity-total-value-month">
+            {formatHoursMinutes(monthHours)}
+          </span>
+          <span className="activity-total-label">{t('activityCard.thisMonth')}</span>
+        </div>
       </div>
 
       {(weekGoal || monthGoal) && (
