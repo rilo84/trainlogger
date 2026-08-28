@@ -4,7 +4,7 @@ function buildSpiralPath(
   endRadius: number,
   cx: number,
   cy: number,
-  steps = 48,
+  steps = 96,
 ): string {
   const points: string[] = []
   for (let i = 0; i <= steps; i++) {
@@ -18,7 +18,8 @@ function buildSpiralPath(
   return `M${points.join(' L')}`
 }
 
-const SPIRAL_PATH = buildSpiralPath(1.75, 5.6, 10.3, 12, 12)
+// Spiral starts clear of the clock face (r 3.8) so the two strokes don't touch.
+const SPIRAL_PATH = buildSpiralPath(1.75, 6.3, 10.4, 12, 12)
 
 interface LogoProps {
   size?: number
@@ -39,8 +40,8 @@ export function Logo({ size = 26 }: LogoProps) {
       aria-hidden="true"
     >
       <path d={SPIRAL_PATH} />
-      <circle cx="12" cy="12" r="4.3" />
-      <path d="M12 9.7v2.5l1.8 1.1" />
+      <circle cx="12" cy="12" r="3.8" />
+      <path d="M12 9.9v2.1l1.5 0.9" />
     </svg>
   )
 }
