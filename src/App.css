@@ -997,6 +997,11 @@
   width: 100%;
 }
 
+.add-goal-hint {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
 .activity-picker {
   display: flex;
   flex-wrap: wrap;

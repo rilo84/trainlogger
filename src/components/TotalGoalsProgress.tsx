@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
-import { currentPeriodActualHours } from '../utils'
+import { currentPeriodActualHours, currentWeekGoal } from '../utils'
 import { GoalRing } from './GoalRing'
 
 interface TotalGoalsProgressProps {
@@ -10,7 +10,7 @@ interface TotalGoalsProgressProps {
 
 export function TotalGoalsProgress({ activities, goals }: TotalGoalsProgressProps) {
   const { t } = useTranslation()
-  const weekGoal = goals.find((g) => g.activityId === null && g.period === 'week')
+  const weekGoal = currentWeekGoal(goals, null)
   const monthGoal = goals.find((g) => g.activityId === null && g.period === 'month')
 
   if (!weekGoal && !monthGoal) return null

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
-import { currentPeriodActualHours, formatHours } from '../utils'
+import { currentPeriodActualHours, currentWeekGoal, formatHours } from '../utils'
 import { GoalRing } from './GoalRing'
 
 interface PerActivityGoalsProgressProps {
@@ -15,7 +15,7 @@ export function PerActivityGoalsProgress({ activities, goals, onSelectActivity }
   const entries = activities
     .map((activity) => ({
       activity,
-      weekGoal: goals.find((g) => g.activityId === activity.id && g.period === 'week'),
+      weekGoal: currentWeekGoal(goals, activity.id),
     }))
     .filter((entry) => entry.weekGoal)
 

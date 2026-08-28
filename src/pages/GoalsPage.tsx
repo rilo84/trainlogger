@@ -1,12 +1,12 @@
 import { useTranslation } from 'react-i18next'
-import type { Activity, AppSettings, Goal, GoalPeriod } from '../types'
+import type { Activity, AppSettings, Goal, NewGoal } from '../types'
 import { AddGoalForm } from '../components/AddGoalForm'
 
 interface GoalsPageProps {
   activities: Activity[]
   goals: Goal[]
   settings: AppSettings
-  onAdd: (goal: { activityId: string | null; period: GoalPeriod; targetHours: number }) => void
+  onAdd: (goal: NewGoal) => void
   onDelete: (goalId: string) => void
 }
 
@@ -45,6 +45,9 @@ export function GoalsPage({ activities, goals, settings, onAdd, onDelete }: Goal
                       hours: goal.targetHours,
                       period: goal.period === 'week' ? t('common.week') : t('common.month'),
                     })}
+                    {goal.weekStart != null && goal.weekEnd != null && (
+                      <> · {t('goals.weekRange', { from: goal.weekStart, to: goal.weekEnd })}</>
+                    )}
                   </div>
                 </div>
                 <button className="btn-icon" aria-label={t('goals.deleteAria')} onClick={() => onDelete(goal.id)}>

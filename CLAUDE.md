@@ -36,7 +36,10 @@ There is no router. `App.tsx` holds an `activePage` state of type `PageId` (`'ov
 ### Data model (`src/types.ts`)
 
 - `Activity` owns its `logs: LogEntry[]` inline; a `LogEntry` is `{ hours, date }`.
-- `Goal` has `activityId: string | null` where **`null` means a total goal across all activities**, plus `period: 'week' | 'month'` and `targetHours`. Duplicate goals (same `activityId` + `period`) are rejected in `handleAddGoal`.
+- `Goal` has `activityId: string | null` where **`null` means a total goal across all activities**, plus `period: 'week' | 'month'` and `targetHours`.
+- **Weekly goals** are either *linear* (no week range — counts every week) or *periodized* (`weekStart`/`weekEnd`, an inclusive ISO-week range 1–53 that recurs every year). For one `(activityId, 'week')` target you may have **one** linear goal **or** any number of non-overlapping periodized blocks — never both, and never two blocks covering the same week. `handleAddGoal` enforces this; `AddGoalForm` also restricts its week pickers to still-free weeks. Month goals stay one-per-`(activityId, 'month')` (periodizing them is a planned follow-up).
+- Overview goal lookups use `currentWeekGoal(goals, activityId)` from `utils.ts` (picks the linear goal, or the block covering the current ISO week, or nothing). `currentPeriodActualHours` already scopes actuals to the current week, so the rings just work.
+- In the chart, each `ChartPoint` carries its `isoWeek` (week granularity only) and `goalCoversPoint(goal, point)` decides per bucket whether a goal's ribbon is drawn — a periodized block only ribbons its own weeks, linear/month goals ribbon every bucket. `relevantGoals` also drops goals that cover no visible bucket, and the goal legend de-dupes by `activityId`. Periodizing month goals is still a planned follow-up.
 
 ### Time / progress calculations (`src/utils.ts`)
 

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
-import { formatHours, getWeekStart, getMonthStart } from '../utils'
+import { formatHours, getWeekStart, getMonthStart, getISOWeek, isWeekGoalActive } from '../utils'
 import { SERIES_COLORS, OTHER_COLOR, buildActivityColorMap } from '../activityColors'
 
 type ChartType = 'bar' | 'line'
@@ -21,6 +21,7 @@ interface ChartPoint {
   label: string
   values: number[]
   activityTotals: Map<string, number>
+  isoWeek?: number
 }
 
 const DEFAULT_WIDTH = 640
@@ -31,14 +32,7 @@ const PLOT_HEIGHT = HEIGHT - MARGIN.top - MARGIN.bottom
 
 // ISO 8601 week number: the week containing the year's first Thursday is week 1.
 function getISOWeekLabel(date: Date, weekAbbrev: string): string {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
-  const dayNum = (d.getUTCDay() + 6) % 7
-  d.setUTCDate(d.getUTCDate() - dayNum + 3)
-  const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4))
-  const firstDayNum = (firstThursday.getUTCDay() + 6) % 7
-  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3)
-  const week = 1 + Math.round((d.getTime() - firstThursday.getTime()) / (7 * 86400000))
-  return `${weekAbbrev}${week}`
+  return `${weekAbbrev}${getISOWeek(date)}`
 }
 
 function getMonthLabel(date: Date, locale: string): string {
@@ -176,6 +170,7 @@ function buildChartData(
       label,
       values: values.map((v) => Math.round(v * 100) / 100),
       activityTotals: totals,
+      isoWeek: granularity === 'week' ? getISOWeek(start) : undefined,
     }
   })
 
@@ -192,6 +187,13 @@ function getGoalActual(goal: Goal, point: ChartPoint): number {
     return [...point.activityTotals.values()].reduce((sum, v) => sum + v, 0)
   }
   return point.activityTotals.get(goal.activityId) ?? 0
+}
+
+// A periodized weekly goal only applies to the buckets whose ISO week is in its range;
+// linear weekly goals and month goals apply to every bucket.
+function goalCoversPoint(goal: Goal, point: ChartPoint): boolean {
+  if (goal.period !== 'week' || point.isoWeek == null) return true
+  return isWeekGoalActive(goal, point.isoWeek)
 }
 
 function resolveGoalColor(actual: number, targetHours: number, baseColor: string): { color: string; passed: boolean } {
@@ -286,14 +288,15 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
   }
 
   const nameById = useMemo(() => new Map(activities.map((a) => [a.id, a.name])), [activities])
-  const relevantGoals = useMemo(
-    () =>
-      goals.filter((g) => {
-        if (g.period !== granularity) return false
-        return focusedActivityId ? g.activityId === focusedActivityId : g.activityId === null
-      }),
-    [goals, granularity, focusedActivityId],
-  )
+  const relevantGoals = useMemo(() => {
+    const forTarget = goals.filter((g) => {
+      if (g.period !== granularity) return false
+      return focusedActivityId ? g.activityId === focusedActivityId : g.activityId === null
+    })
+    // Keep only goals that actually cover a bucket in the visible window; periodized
+    // weekly blocks outside it are neither drawn nor counted towards the y-axis.
+    return forTarget.filter((g) => points.some((p) => goalCoversPoint(g, p)))
+  }, [goals, granularity, focusedActivityId, points])
 
   const periodTotals = points.map((p) => p.values.reduce((sum, v) => sum + v, 0))
   const maxValue = Math.max(
@@ -513,7 +516,7 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
                     const yBottom = yScale(bottom)
                     return { s: seg.s, yTop, yBottom, isTopmost }
                   })
-                  const goal = relevantGoals[0]
+                  const goal = relevantGoals.find((g) => goalCoversPoint(g, point))
                   return (
                     <g key={point.key}>
                       {drawn.map(({ s, yTop, yBottom, isTopmost }) =>
@@ -592,15 +595,22 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
 
             {chartType === 'line' &&
               relevantGoals.map((goal) => {
+                const coveredIdx = points.map((p, i) => (goalCoversPoint(goal, p) ? i : -1)).filter((i) => i >= 0)
+                if (coveredIdx.length === 0) return null
+                const firstIdx = coveredIdx[0]
+                const lastIdx = coveredIdx[coveredIdx.length - 1]
                 const y = yScale(goal.targetHours)
-                const lastPoint = points[points.length - 1]
                 const baseColor = goalBaseColor(goal, series)
-                const { color, passed } = resolveGoalColor(getGoalActual(goal, lastPoint), goal.targetHours, baseColor)
+                const { color, passed } = resolveGoalColor(
+                  getGoalActual(goal, points[lastIdx]),
+                  goal.targetHours,
+                  baseColor,
+                )
                 return (
                   <line
                     key={goal.id}
-                    x1={MARGIN.left}
-                    x2={width - MARGIN.right}
+                    x1={MARGIN.left + bandWidth * firstIdx}
+                    x2={MARGIN.left + bandWidth * (lastIdx + 1)}
                     y1={y}
                     y2={y}
                     className="chart-goal-line"
@@ -669,7 +679,9 @@ export function ActivityHoursChart({ activities, goals }: ActivityHoursChartProp
 
       {!showTable && relevantGoals.length > 0 && (
         <div className="chart-goal-legend">
-          {relevantGoals.map((goal) => {
+          {relevantGoals
+            .filter((g, i, arr) => arr.findIndex((x) => x.activityId === g.activityId) === i)
+            .map((goal) => {
             const color = goalBaseColor(goal, series)
             return (
               <div className="chart-goal-legend-item" key={goal.id}>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
-import { sumHours, currentPeriodActualHours, formatHoursMinutes } from '../utils'
+import { sumHours, currentPeriodActualHours, currentWeekGoal, formatHoursMinutes } from '../utils'
 import { LogHoursForm } from './LogHoursForm'
 import { GoalRing } from './GoalRing'
 
@@ -26,7 +26,7 @@ export function ActivityCard({ activity, goals, color, stepMinutes, onLogHours, 
   const visibleLogs = isExpanded ? sortedLogs : sortedLogs.slice(0, COLLAPSED_LOG_COUNT)
   const hasMoreLogs = sortedLogs.length > COLLAPSED_LOG_COUNT
 
-  const weekGoal = goals.find((g) => g.activityId === activity.id && g.period === 'week')
+  const weekGoal = currentWeekGoal(goals, activity.id)
   const monthGoal = goals.find((g) => g.activityId === activity.id && g.period === 'month')
 
   return (

@@ -1,4 +1,4 @@
-import type { Activity, GoalPeriod, LogEntry } from './types'
+import type { Activity, Goal, GoalPeriod, LogEntry } from './types'
 
 export function sumHours(logs: LogEntry[]): number {
   const total = logs.reduce((sum, log) => sum + log.hours, 0)
@@ -33,6 +33,37 @@ export function getWeekStart(date: Date): Date {
 
 export function getMonthStart(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), 1)
+}
+
+// ISO 8601 week number (1–53): the week containing the year's first Thursday is week 1.
+export function getISOWeek(date: Date): number {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+  const dayNum = (d.getUTCDay() + 6) % 7
+  d.setUTCDate(d.getUTCDate() - dayNum + 3)
+  const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4))
+  const firstDayNum = (firstThursday.getUTCDay() + 6) % 7
+  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3)
+  return 1 + Math.round((d.getTime() - firstThursday.getTime()) / (7 * 86400000))
+}
+
+// A weekly goal with a week range only counts during that inclusive range (recurring
+// every year); a weekly goal without a range counts every week.
+export function isWeekGoalActive(goal: Goal, isoWeek: number): boolean {
+  if (goal.weekStart == null || goal.weekEnd == null) return true
+  return isoWeek >= goal.weekStart && isoWeek <= goal.weekEnd
+}
+
+// The one weekly goal that applies right now for a target (activityId === null = the total
+// goal). At most one can match because the goal form forbids two goals covering the same week.
+export function currentWeekGoal(
+  goals: Goal[],
+  activityId: string | null,
+  now: Date = new Date(),
+): Goal | undefined {
+  const isoWeek = getISOWeek(now)
+  return goals.find(
+    (g) => g.period === 'week' && g.activityId === activityId && isWeekGoalActive(g, isoWeek),
+  )
 }
 
 // activityId === null sums across all activities (a "total" goal's progress).

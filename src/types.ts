@@ -19,7 +19,13 @@ export interface Goal {
   activityId: string | null
   period: GoalPeriod
   targetHours: number
+  // Periodized weekly goals: an inclusive ISO-week range (1–53) that recurs every year.
+  // Both present = the goal only counts during that block; both absent = every week.
+  weekStart?: number
+  weekEnd?: number
 }
+
+export type NewGoal = Omit<Goal, 'id'>
 
 export interface User {
   name: string
