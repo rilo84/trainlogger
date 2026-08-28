@@ -34,6 +34,9 @@
 
 * {
   box-sizing: border-box;
+  /* Kill the rectangular tap-highlight overlay mobile browsers draw on press —
+     it ignores border-radius and looks wrong behind pill-shaped buttons. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,

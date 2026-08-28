@@ -1130,20 +1130,10 @@
   overflow-wrap: anywhere;
 }
 
-.activity-summary {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
 .activity-total {
   display: flex;
   align-items: baseline;
   gap: 8px;
-}
-
-.activity-total-value-month {
-  color: var(--color-accent-strong);
 }
 
 .activity-total-value {

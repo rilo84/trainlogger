@@ -24,7 +24,6 @@ export function ActivityCard({ activity, goals, color, stepMinutes, onLogHours, 
   const [pendingDeleteLog, setPendingDeleteLog] = useState<LogEntry | null>(null)
 
   const weekHours = currentPeriodActualHours([activity], 'week', activity.id)
-  const monthHours = currentPeriodActualHours([activity], 'month', activity.id)
   const sortedLogs = [...activity.logs].sort((a, b) => b.date.localeCompare(a.date))
   const visibleLogs = isExpanded ? sortedLogs : sortedLogs.slice(0, COLLAPSED_LOG_COUNT)
   const hasMoreLogs = sortedLogs.length > COLLAPSED_LOG_COUNT
@@ -38,17 +37,9 @@ export function ActivityCard({ activity, goals, color, stepMinutes, onLogHours, 
         <h3>{activity.name}</h3>
       </div>
 
-      <div className="activity-summary">
-        <div className="activity-total">
-          <span className="activity-total-value">{formatHoursMinutes(weekHours)}</span>
-          <span className="activity-total-label">{t('activityCard.thisWeek')}</span>
-        </div>
-        <div className="activity-total">
-          <span className="activity-total-value activity-total-value-month">
-            {formatHoursMinutes(monthHours)}
-          </span>
-          <span className="activity-total-label">{t('activityCard.thisMonth')}</span>
-        </div>
+      <div className="activity-total">
+        <span className="activity-total-value">{formatHoursMinutes(weekHours)}</span>
+        <span className="activity-total-label">{t('activityCard.thisWeek')}</span>
       </div>
 
       {(weekGoal || monthGoal) && (
