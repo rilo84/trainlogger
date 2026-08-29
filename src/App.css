@@ -1012,6 +1012,17 @@
   width: 100%;
 }
 
+/* Period + goal-type segmented controls share one full-width, equal-column layout,
+   so every button is as wide as the longest label ("Samtliga månader"). */
+.add-goal-section .segmented {
+  display: flex;
+  width: 100%;
+}
+
+.add-goal-section .segmented button {
+  flex: 1;
+}
+
 .add-goal-hint {
   font-size: 0.82rem;
   color: var(--color-text-muted);
