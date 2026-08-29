@@ -1197,7 +1197,10 @@
   gap: 8px;
 }
 
-.log-hours-form .wheel-picker {
+/* Size the column, not the picker itself — a flex-basis on .wheel-picker would land on
+   the column's vertical axis and squash the wheel below its 200px, pushing the
+   highlighted row off-centre. */
+.log-hours-form .wheel-picker-col {
   flex: 1 1 130px;
 }
 
