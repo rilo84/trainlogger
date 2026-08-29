@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { formatHours } from '../utils'
+import { formatHoursMinutes } from '../utils'
 
 interface GoalRingProps {
   label: string
@@ -20,7 +20,7 @@ export function GoalRing({ label, actual, target, size = 160 }: GoalRingProps) {
   const arcColor = reached ? 'var(--color-accent)' : '#3987e5'
   const dashOffset = circumference * (1 - fraction)
 
-  // Below this size the "actual / target h" line is unreadable, so show just the percent, centered.
+  // Below this size the "actual / target" line is unreadable, so show just the percent, centered.
   const showDetail = size >= 80
 
   return (
@@ -30,7 +30,7 @@ export function GoalRing({ label, actual, target, size = 160 }: GoalRingProps) {
         height={size}
         viewBox={`0 0 ${size} ${size}`}
         role="img"
-        aria-label={`${label}: ${percent}% (${formatHours(actual)} ${t('common.of')} ${formatHours(target)} h)`}
+        aria-label={`${label}: ${percent}% (${formatHoursMinutes(actual)} ${t('common.of')} ${formatHoursMinutes(target)})`}
       >
         <circle
           cx={size / 2}
@@ -70,7 +70,7 @@ export function GoalRing({ label, actual, target, size = 160 }: GoalRingProps) {
             className="goal-progress-hours"
             style={{ fontSize: size * 0.075 }}
           >
-            {formatHours(actual)} / {formatHours(target)} h
+            {formatHoursMinutes(actual)} / {formatHoursMinutes(target)}
           </text>
         )}
       </svg>

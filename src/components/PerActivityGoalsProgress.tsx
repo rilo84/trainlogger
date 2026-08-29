@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
-import { currentPeriodActualHours, currentWeekGoal, formatHours } from '../utils'
+import { currentPeriodActualHours, currentWeekGoal, formatHoursMinutes } from '../utils'
 import { GoalRing } from './GoalRing'
 
 interface PerActivityGoalsProgressProps {
@@ -42,7 +42,7 @@ export function PerActivityGoalsProgress({ activities, goals, onSelectActivity }
             >
               <div className="per-activity-goals-name">{activity.name}</div>
               <GoalRing
-                label={`${formatHours(actual)} / ${formatHours(target)} h`}
+                label={`${formatHoursMinutes(actual)} / ${formatHoursMinutes(target)}`}
                 actual={actual}
                 target={target}
                 size={62}

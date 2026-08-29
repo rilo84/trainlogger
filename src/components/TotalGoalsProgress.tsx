@@ -1,6 +1,11 @@
 import { useTranslation } from 'react-i18next'
 import type { Activity, Goal } from '../types'
-import { currentPeriodActualHours, currentWeekGoal, currentMonthGoal, formatHours } from '../utils'
+import {
+  currentPeriodActualHours,
+  currentWeekGoal,
+  currentMonthGoal,
+  formatHoursMinutes,
+} from '../utils'
 import { GoalRing } from './GoalRing'
 
 interface TotalGoalsProgressProps {
@@ -32,7 +37,7 @@ export function TotalGoalsProgress({ activities, goals }: TotalGoalsProgressProp
           <div className="goal-ring-group">
             <div className="per-activity-goals-name">{t('common.weeklyGoal')}</div>
             <GoalRing
-              label={`${formatHours(weekActual)} / ${formatHours(weekGoal.targetHours)} h`}
+              label={`${formatHoursMinutes(weekActual)} / ${formatHoursMinutes(weekGoal.targetHours)}`}
               actual={weekActual}
               target={weekGoal.targetHours}
               size={ringSize}
@@ -43,7 +48,7 @@ export function TotalGoalsProgress({ activities, goals }: TotalGoalsProgressProp
           <div className="goal-ring-group">
             <div className="per-activity-goals-name">{t('common.monthlyGoal')}</div>
             <GoalRing
-              label={`${formatHours(monthActual)} / ${formatHours(monthGoal.targetHours)} h`}
+              label={`${formatHoursMinutes(monthActual)} / ${formatHoursMinutes(monthGoal.targetHours)}`}
               actual={monthActual}
               target={monthGoal.targetHours}
               size={ringSize}
