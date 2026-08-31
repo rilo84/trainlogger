@@ -165,6 +165,12 @@
     "swedish": "Svenska",
     "english": "English"
   },
+  "activityStream": {
+    "newActivity": "Ny aktivitet",
+    "unnamed": "Namnlös aktivitet",
+    "minutes_one": "{{count}} minut",
+    "minutes_other": "{{count}} minuter"
+  },
   "pwa": {
     "updateAvailable": "En ny version finns tillgänglig",
     "reload": "Uppdatera",

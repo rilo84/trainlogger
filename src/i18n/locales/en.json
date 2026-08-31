@@ -165,6 +165,12 @@
     "swedish": "Svenska",
     "english": "English"
   },
+  "activityStream": {
+    "newActivity": "New activity",
+    "unnamed": "Unnamed activity",
+    "minutes_one": "{{count}} minute",
+    "minutes_other": "{{count}} minutes"
+  },
   "pwa": {
     "updateAvailable": "A new version is available",
     "reload": "Update",
