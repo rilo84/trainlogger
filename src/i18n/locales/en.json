@@ -112,6 +112,17 @@
     "today": "Today",
     "yesterday": "Yesterday"
   },
+  "celebration": {
+    "title": "Nice work!",
+    "titleClose": "Great going!",
+    "titleReached": "What a winner!",
+    "titleBeyond": "Now you're strong!",
+    "progress": "{{percent}}% of your goal done!",
+    "close": "Almost there — just {{remaining}}% to go!",
+    "reached": "Congratulations, you hit your goal!",
+    "beyond": "Here's someone who never gives up!",
+    "logged": "Your time is logged."
+  },
   "chart": {
     "emptyTitle": "Hours per activity",
     "emptyHint": "Log hours on an activity to see the chart.",

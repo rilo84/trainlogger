@@ -112,6 +112,17 @@
     "today": "Idag",
     "yesterday": "Igår"
   },
+  "celebration": {
+    "title": "Snyggt jobbat!",
+    "titleClose": "Grymt bra!",
+    "titleReached": "Vilken vinnare!",
+    "titleBeyond": "Nu är du stark!",
+    "progress": "{{percent}} % av målet avklarat!",
+    "close": "Nu är du nära målet, bara {{remaining}} % kvar!",
+    "reached": "Grattis, du klarade målet!",
+    "beyond": "Här har vi en som inte ger sig!",
+    "logged": "Tiden är loggad."
+  },
   "chart": {
     "emptyTitle": "Timmar per aktivitet",
     "emptyHint": "Logga timmar på en aktivitet för att se diagrammet.",

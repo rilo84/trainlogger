@@ -6,9 +6,11 @@ interface GoalRingProps {
   actual: number
   target: number
   size?: number
+  // Tween the progress arc when `actual` changes (used by the reward overlay).
+  animate?: boolean
 }
 
-export function GoalRing({ label, actual, target, size = 160 }: GoalRingProps) {
+export function GoalRing({ label, actual, target, size = 160, animate = false }: GoalRingProps) {
   const { t } = useTranslation()
   const stroke = Math.round(size * 0.1)
   const radius = (size - stroke) / 2
@@ -51,6 +53,11 @@ export function GoalRing({ label, actual, target, size = 160 }: GoalRingProps) {
           strokeDasharray={circumference}
           strokeDashoffset={dashOffset}
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          style={
+            animate
+              ? { transition: 'stroke-dashoffset 1100ms cubic-bezier(0.22, 1, 0.36, 1)' }
+              : undefined
+          }
         />
         <text
           x={size / 2}

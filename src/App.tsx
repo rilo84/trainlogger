@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import i18n from './i18n/i18n'
-import type { Activity, AppSettings, Goal, NewGoal, PageId, User } from './types'
-import { goalConflicts } from './utils'
+import type { Activity, AppSettings, Goal, GoalPeriod, NewGoal, PageId, User } from './types'
+import { currentMonthGoal, currentPeriodActualHours, currentWeekGoal, goalConflicts } from './utils'
 import { Layout } from './components/Layout'
+import { Celebration } from './components/Celebration'
+import type { CelebrationData } from './components/Celebration'
 import { LoginPage } from './pages/LoginPage'
 import { OverviewPage } from './pages/OverviewPage'
 import { ActivitiesPage } from './pages/ActivitiesPage'
@@ -63,6 +65,7 @@ function App() {
   const [user, setUser] = useState<User | null>(loadUser)
   const [settings, setSettings] = useState<AppSettings>(loadSettings)
   const [activePage, setActivePage] = useState<PageId>('overview')
+  const [celebration, setCelebration] = useState<CelebrationData | null>(null)
 
   useEffect(() => {
     localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(activities))
@@ -111,11 +114,27 @@ function App() {
   }
 
   function handleLogHours(activityId: string, hours: number, date: string) {
-    setActivities((prev) =>
-      prev.map((a) =>
-        a.id === activityId ? { ...a, logs: [...a.logs, { id: createId(), hours, date }] } : a,
-      ),
+    const entry = { id: createId(), hours, date }
+    const nextActivities = activities.map((a) =>
+      a.id === activityId ? { ...a, logs: [...a.logs, entry] } : a,
     )
+    setActivities(nextActivities)
+
+    // Reward the user with a full-screen celebration. It shows the activity's
+    // active goal ring climbing from its old fill to the new one; with no goal
+    // it is just confetti and a "nice job" heading.
+    const activity = activities.find((a) => a.id === activityId)
+    if (!activity) return
+    const goal = currentWeekGoal(goals, activityId) ?? currentMonthGoal(goals, activityId)
+    const period: GoalPeriod | null = goal ? goal.period : null
+    setCelebration({
+      id: entry.id,
+      activityName: activity.name,
+      period,
+      target: goal ? goal.targetHours : null,
+      actualBefore: period ? currentPeriodActualHours(activities, period, activityId) : 0,
+      actualAfter: period ? currentPeriodActualHours(nextActivities, period, activityId) : 0,
+    })
   }
 
   function handleDeleteLog(activityId: string, logId: string) {
@@ -151,6 +170,7 @@ function App() {
   }
 
   return (
+    <>
     <Layout
       activePage={activePage}
       onNavigate={setActivePage}
@@ -185,6 +205,10 @@ function App() {
         <SettingsPage user={user} settings={settings} onUpdateUser={setUser} onUpdateSettings={setSettings} />
       )}
     </Layout>
+    {celebration && (
+      <Celebration key={celebration.id} data={celebration} onDone={() => setCelebration(null)} />
+    )}
+    </>
   )
 }
 
