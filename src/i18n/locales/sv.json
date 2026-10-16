@@ -197,5 +197,38 @@
     "edit": "Ändra",
     "notSet": "Inte angivet",
     "noneAdded": "Inga tillagda"
+  },
+  "landing": {
+    "tagline": "Din träningstid, samlad",
+    "headline": "Träna mer. Logga enklare.",
+    "lead": "Installera Treni på mobilen eller datorn så har du den alltid nära till hands – startar direkt från hemskärmen, fungerar offline och kräver ingen appbutik.",
+    "downloadButton": "Ladda ner appen",
+    "fineprint": "Gratis · Ingen registrering · Fungerar offline",
+    "continueInBrowser": "Använd i webbläsaren istället",
+    "features": {
+      "log": {
+        "title": "Logga på sekunder",
+        "text": "Snurra fram tid och datum med tummen – klart på ett par tryck."
+      },
+      "goals": {
+        "title": "Nå dina mål",
+        "text": "Sätt vecko- och månadsmål och se ringarna fyllas när du tränar."
+      },
+      "offline": {
+        "title": "Alltid med dig",
+        "text": "Ligger på hemskärmen som en vanlig app och fungerar utan nät."
+      }
+    },
+    "installedTitle": "Treni är installerad! 🎉",
+    "installedText": "Öppna Treni från hemskärmen eller appmenyn för bästa upplevelse.",
+    "iosTitle": "Installera på iPhone och iPad",
+    "iosStep1": "Tryck på Dela-knappen i Safari (fyrkanten med en pil uppåt)",
+    "iosStep2": "Välj ”Lägg till på hemskärmen”",
+    "iosStep3": "Tryck på ”Lägg till” – Treni hamnar bland dina appar",
+    "manualTitle": "Installera Treni",
+    "manualStep1": "Öppna webbläsarens meny (⋮ eller ⋯)",
+    "manualStep2": "Välj ”Installera app” eller ”Lägg till på startskärmen”",
+    "manualStep3": "Bekräfta – Treni hamnar bland dina appar",
+    "gotIt": "Uppfattat"
   }
 }

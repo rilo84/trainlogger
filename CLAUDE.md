@@ -20,6 +20,8 @@ A single-page React 19 + TypeScript app built with Vite, packaged as an installa
 
 **No backend, no authentication.** Everything runs client-side; the app opens straight to the overview. The gear icon (`SettingsIcon`) in the sidebar footer / mobile header opens the Settings page (name, theme, language, time precision). The optional display name lives in `settings.name` and is shown in the sidebar footer; on first load it is migrated from the legacy `claudetrainer.user` key, which is then removed.
 
+**Landing page.** In a normal browser tab (`isRunningStandalone()` in `hooks/useInstallPrompt.ts` is false) `App.tsx` first renders `LandingPage`, which pushes installing the PWA: the CTA calls the native `beforeinstallprompt` dialog when available, otherwise opens manual install steps (iOS share-sheet steps when `isIos()`). "Use in the browser" sets `claudetrainer.useInBrowser` so the landing page is not shown again in that browser. Its animations are pure CSS (`.landing-*` in `App.css`) and are switched off under `prefers-reduced-motion`.
+
 **First-run guide.** While `settings.onboardingDone` is false, `App.tsx` renders `OnboardingPage` instead of `Layout`: a 4-step wizard (profile → activities → goals → summary) with back/next and a step indicator. Theme and language apply immediately via `onUpdateSettings`; name, activities and goals are a local draft (reusing `AddActivityForm`/`AddGoalForm`) handed to `handleCompleteOnboarding` only on the final save. Skipping just sets the flag. Settings saved before the flag existed load as `onboardingDone: true`, so existing users never see it.
 
 ### State and persistence

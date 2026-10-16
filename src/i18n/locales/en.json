@@ -197,5 +197,38 @@
     "edit": "Edit",
     "notSet": "Not set",
     "noneAdded": "None added"
+  },
+  "landing": {
+    "tagline": "Your training time, together",
+    "headline": "Train more. Log less.",
+    "lead": "Install Treni on your phone or computer and keep it close at hand – it launches from your home screen, works offline and needs no app store.",
+    "downloadButton": "Download the app",
+    "fineprint": "Free · No sign-up · Works offline",
+    "continueInBrowser": "Use it in the browser instead",
+    "features": {
+      "log": {
+        "title": "Log in seconds",
+        "text": "Spin in the time and date with your thumb – done in a couple of taps."
+      },
+      "goals": {
+        "title": "Hit your goals",
+        "text": "Set weekly and monthly goals and watch the rings fill as you train."
+      },
+      "offline": {
+        "title": "Always with you",
+        "text": "Sits on your home screen like any other app and works without a connection."
+      }
+    },
+    "installedTitle": "Treni is installed! 🎉",
+    "installedText": "Open Treni from your home screen or app menu for the best experience.",
+    "iosTitle": "Install on iPhone and iPad",
+    "iosStep1": "Tap the Share button in Safari (the square with an arrow pointing up)",
+    "iosStep2": "Choose “Add to Home Screen”",
+    "iosStep3": "Tap “Add” – Treni shows up among your apps",
+    "manualTitle": "Install Treni",
+    "manualStep1": "Open the browser menu (⋮ or ⋯)",
+    "manualStep2": "Choose “Install app” or “Add to Home screen”",
+    "manualStep3": "Confirm – Treni shows up among your apps",
+    "gotIt": "Got it"
   }
 }

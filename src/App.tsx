@@ -10,12 +10,16 @@ import { ActivitiesPage } from './pages/ActivitiesPage'
 import { GoalsPage } from './pages/GoalsPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { OnboardingPage } from './pages/OnboardingPage'
+import { LandingPage } from './pages/LandingPage'
+import { isRunningStandalone } from './hooks/useInstallPrompt'
 import type { OnboardingResult } from './pages/OnboardingPage'
 import './App.css'
 
 const ACTIVITIES_STORAGE_KEY = 'claudetrainer.activities'
 const GOALS_STORAGE_KEY = 'claudetrainer.goals'
 const SETTINGS_STORAGE_KEY = 'claudetrainer.settings'
+// Set once the visitor picks "use in the browser" on the landing page.
+const USE_IN_BROWSER_STORAGE_KEY = 'claudetrainer.useInBrowser'
 // Left behind by the old login screen; its name is carried over into settings.
 const LEGACY_USER_STORAGE_KEY = 'claudetrainer.user'
 
@@ -59,6 +63,16 @@ function loadSettings(): AppSettings {
   }
 }
 
+// The landing page is for browser tabs only; an installed PWA goes straight to the app.
+function shouldShowLanding(): boolean {
+  if (isRunningStandalone()) return false
+  try {
+    return localStorage.getItem(USE_IN_BROWSER_STORAGE_KEY) !== '1'
+  } catch {
+    return true
+  }
+}
+
 function createId() {
   return crypto.randomUUID()
 }
@@ -71,6 +85,7 @@ function App() {
   // Where the gear button returns to when Settings is closed again.
   const [pageBeforeSettings, setPageBeforeSettings] = useState<PageId>('overview')
   const [celebration, setCelebration] = useState<CelebrationData | null>(null)
+  const [showLanding, setShowLanding] = useState(shouldShowLanding)
 
   useEffect(() => {
     localStorage.setItem(ACTIVITIES_STORAGE_KEY, JSON.stringify(activities))
@@ -179,6 +194,21 @@ function App() {
     setGoals((prev) => [...prev, ...result.goals])
     setSettings((prev) => ({ ...prev, name: result.name, onboardingDone: true }))
     setActivePage('overview')
+  }
+
+  function handleContinueInBrowser() {
+    localStorage.setItem(USE_IN_BROWSER_STORAGE_KEY, '1')
+    setShowLanding(false)
+  }
+
+  if (showLanding) {
+    return (
+      <LandingPage
+        language={settings.language}
+        onChangeLanguage={(language) => setSettings((prev) => ({ ...prev, language }))}
+        onContinueInBrowser={handleContinueInBrowser}
+      />
+    )
   }
 
   if (!settings.onboardingDone) {
