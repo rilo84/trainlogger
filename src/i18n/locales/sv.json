@@ -13,7 +13,8 @@
     "perMonth": "Per månad",
     "weeklyGoal": "Veckomål",
     "monthlyGoal": "Månadsmål",
-    "of": "av"
+    "of": "av",
+    "typeToConfirm": "Skriv ”{{word}}” för att bekräfta"
   },
   "nav": {
     "overview": "Översikt",
@@ -160,7 +161,13 @@
     "themeLight": "Ljust",
     "languageTitle": "Språk",
     "swedish": "Svenska",
-    "english": "English"
+    "english": "English",
+    "deleteAllTitle": "Radera all data",
+    "deleteAllHint": "Tar bort alla aktiviteter, all loggad tid, alla mål och ditt namn. Därefter startar kom igång-guiden igen.",
+    "deleteAllButton": "Radera all data",
+    "deleteAllConfirmTitle": "Radera all data?",
+    "deleteAllWarning": "All information i appen – aktiviteter, loggad tid, mål och namn – raderas permanent. Det går inte att ångra.",
+    "deleteAllConfirm": "Ja, radera allt"
   },
   "pwa": {
     "updateAvailable": "En ny version finns tillgänglig",

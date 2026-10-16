@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { AppSettings, Language, Theme } from '../types'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 
 interface SettingsPageProps {
   settings: AppSettings
   onUpdateSettings: (settings: AppSettings) => void
+  onDeleteAllData: () => void
 }
 
 const STEP_OPTIONS = [1, 5, 10, 15, 30, 60]
@@ -16,8 +19,9 @@ export const THEME_OPTIONS: { value: Theme; labelKey: string }[] = [
   { value: 'light', labelKey: 'settingsPage.themeLight' },
 ]
 
-export function SettingsPage({ settings, onUpdateSettings }: SettingsPageProps) {
+export function SettingsPage({ settings, onUpdateSettings, onDeleteAllData }: SettingsPageProps) {
   const { t } = useTranslation()
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   return (
     <>
@@ -103,7 +107,30 @@ export function SettingsPage({ settings, onUpdateSettings }: SettingsPageProps) 
             ))}
           </div>
         </div>
+
+        <div className="chart-card settings-danger">
+          <div className="chart-controls">
+            <div className="chart-title-group">
+              <h2>{t('settingsPage.deleteAllTitle')}</h2>
+            </div>
+          </div>
+          <p className="page-subtitle settings-hint">{t('settingsPage.deleteAllHint')}</p>
+          <button type="button" className="btn btn-danger settings-danger-button" onClick={() => setConfirmDelete(true)}>
+            {t('settingsPage.deleteAllButton')}
+          </button>
+        </div>
       </div>
+
+      {confirmDelete && (
+        <ConfirmDialog
+          title={t('settingsPage.deleteAllConfirmTitle')}
+          message={t('settingsPage.deleteAllWarning')}
+          confirmLabel={t('settingsPage.deleteAllConfirm')}
+          confirmText="del"
+          onConfirm={onDeleteAllData}
+          onCancel={() => setConfirmDelete(false)}
+        />
+      )}
     </>
   )
 }

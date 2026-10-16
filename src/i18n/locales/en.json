@@ -13,7 +13,8 @@
     "perMonth": "Monthly",
     "weeklyGoal": "Weekly goal",
     "monthlyGoal": "Monthly goal",
-    "of": "of"
+    "of": "of",
+    "typeToConfirm": "Type “{{word}}” to confirm"
   },
   "nav": {
     "overview": "Overview",
@@ -160,7 +161,13 @@
     "themeLight": "Light",
     "languageTitle": "Language",
     "swedish": "Svenska",
-    "english": "English"
+    "english": "English",
+    "deleteAllTitle": "Delete all data",
+    "deleteAllHint": "Removes every activity, all logged time, all goals and your name. The getting-started guide then runs again.",
+    "deleteAllButton": "Delete all data",
+    "deleteAllConfirmTitle": "Delete all data?",
+    "deleteAllWarning": "Everything in the app – activities, logged time, goals and name – will be permanently deleted. This can’t be undone.",
+    "deleteAllConfirm": "Yes, delete everything"
   },
   "pwa": {
     "updateAvailable": "A new version is available",

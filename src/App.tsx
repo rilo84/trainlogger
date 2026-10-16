@@ -196,6 +196,17 @@ function App() {
     setActivePage('overview')
   }
 
+  // Wipes activities, logs, goals and the name, then sends the user back through the
+  // first-run guide. Theme and language are kept so the screen doesn't change under them.
+  function handleDeleteAllData() {
+    setActivities([])
+    setGoals([])
+    setSettings((prev) => ({ ...DEFAULT_SETTINGS, theme: prev.theme, language: prev.language }))
+    setCelebration(null)
+    setActivePage('overview')
+    setPageBeforeSettings('overview')
+  }
+
   function handleContinueInBrowser() {
     localStorage.setItem(USE_IN_BROWSER_STORAGE_KEY, '1')
     setShowLanding(false)
@@ -254,7 +265,7 @@ function App() {
         />
       )}
       {activePage === 'settings' && (
-        <SettingsPage settings={settings} onUpdateSettings={setSettings} />
+        <SettingsPage settings={settings} onUpdateSettings={setSettings} onDeleteAllData={handleDeleteAllData} />
       )}
     </Layout>
     {celebration && (
