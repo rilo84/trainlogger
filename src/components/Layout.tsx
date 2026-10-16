@@ -1,7 +1,7 @@
 import type { ComponentType, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { PageId, User } from '../types'
-import { OverviewIcon, ActivitiesIcon, GoalsIcon, DownloadIcon, UserIcon } from './NavIcons'
+import type { PageId } from '../types'
+import { OverviewIcon, ActivitiesIcon, GoalsIcon, DownloadIcon, SettingsIcon } from './NavIcons'
 import { Logo } from './Logo'
 import { useInstallPrompt } from '../hooks/useInstallPrompt'
 
@@ -20,13 +20,12 @@ const NAV_ITEMS: NavItem[] = [
 interface LayoutProps {
   activePage: PageId
   onNavigate: (page: PageId) => void
-  user: User
-  onLogout: () => void
-  onOpenSettings: () => void
+  userName: string
+  onToggleSettings: () => void
   children: ReactNode
 }
 
-export function Layout({ activePage, onNavigate, user, onLogout, onOpenSettings, children }: LayoutProps) {
+export function Layout({ activePage, onNavigate, userName, onToggleSettings, children }: LayoutProps) {
   const { t } = useTranslation()
   const { canInstall, promptInstall } = useInstallPrompt()
 
@@ -51,9 +50,9 @@ export function Layout({ activePage, onNavigate, user, onLogout, onOpenSettings,
             </button>
           ))}
         </nav>
-        <div className="sidebar-user">
-          <span className="sidebar-user-name">{user.name}</span>
-          <div className="sidebar-user-actions">
+        <div className="sidebar-footer">
+          {userName && <span className="sidebar-footer-name">{userName}</span>}
+          <div className="sidebar-footer-actions">
             {canInstall && (
               <button
                 type="button"
@@ -67,15 +66,13 @@ export function Layout({ activePage, onNavigate, user, onLogout, onOpenSettings,
             )}
             <button
               type="button"
-              className="btn-icon"
-              onClick={onOpenSettings}
+              className={`btn-icon ${activePage === 'settings' ? 'active' : ''}`}
+              onClick={onToggleSettings}
+              aria-pressed={activePage === 'settings'}
               aria-label={t('common.settings')}
               title={t('common.settings')}
             >
-              <UserIcon size={18} />
-            </button>
-            <button type="button" className="sidebar-logout" onClick={onLogout}>
-              {t('common.logout')}
+              <SettingsIcon size={18} />
             </button>
           </div>
         </div>
@@ -101,15 +98,13 @@ export function Layout({ activePage, onNavigate, user, onLogout, onOpenSettings,
             )}
             <button
               type="button"
-              className="btn-icon"
-              onClick={onOpenSettings}
+              className={`btn-icon ${activePage === 'settings' ? 'active' : ''}`}
+              onClick={onToggleSettings}
+              aria-pressed={activePage === 'settings'}
               aria-label={t('common.settings')}
               title={t('common.settings')}
             >
-              <UserIcon size={20} />
-            </button>
-            <button type="button" className="mobile-logout" onClick={onLogout}>
-              {t('common.logout')}
+              <SettingsIcon size={20} />
             </button>
           </div>
         </header>

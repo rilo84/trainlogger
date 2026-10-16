@@ -1,23 +1,25 @@
 import { useEffect, useState } from 'react'
 import i18n from './i18n/i18n'
-import type { Activity, AppSettings, Goal, GoalPeriod, NewGoal, PageId, User } from './types'
+import type { Activity, AppSettings, Goal, GoalPeriod, NewGoal, PageId } from './types'
 import { currentMonthGoal, currentPeriodActualHours, currentWeekGoal, goalConflicts } from './utils'
 import { Layout } from './components/Layout'
 import { Celebration } from './components/Celebration'
 import type { CelebrationData } from './components/Celebration'
-import { LoginPage } from './pages/LoginPage'
 import { OverviewPage } from './pages/OverviewPage'
 import { ActivitiesPage } from './pages/ActivitiesPage'
 import { GoalsPage } from './pages/GoalsPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { OnboardingPage } from './pages/OnboardingPage'
+import type { OnboardingResult } from './pages/OnboardingPage'
 import './App.css'
 
 const ACTIVITIES_STORAGE_KEY = 'claudetrainer.activities'
 const GOALS_STORAGE_KEY = 'claudetrainer.goals'
-const USER_STORAGE_KEY = 'claudetrainer.user'
 const SETTINGS_STORAGE_KEY = 'claudetrainer.settings'
+// Left behind by the old login screen; its name is carried over into settings.
+const LEGACY_USER_STORAGE_KEY = 'claudetrainer.user'
 
-const DEFAULT_SETTINGS: AppSettings = { hourStepMinutes: 15, language: 'sv', theme: 'dark' }
+const DEFAULT_SETTINGS: AppSettings = { name: '', hourStepMinutes: 15, language: 'sv', theme: 'dark', onboardingDone: false }
 
 function loadActivities(): Activity[] {
   try {
@@ -37,21 +39,23 @@ function loadGoals(): Goal[] {
   }
 }
 
-function loadUser(): User | null {
+function loadLegacyUserName(): string {
   try {
-    const raw = localStorage.getItem(USER_STORAGE_KEY)
-    return raw ? (JSON.parse(raw) as User) : null
+    const raw = localStorage.getItem(LEGACY_USER_STORAGE_KEY)
+    return raw ? ((JSON.parse(raw) as { name?: string }).name ?? '') : ''
   } catch {
-    return null
+    return ''
   }
 }
 
 function loadSettings(): AppSettings {
+  const defaults = { ...DEFAULT_SETTINGS, name: loadLegacyUserName() }
   try {
     const raw = localStorage.getItem(SETTINGS_STORAGE_KEY)
-    return raw ? { ...DEFAULT_SETTINGS, ...(JSON.parse(raw) as AppSettings) } : DEFAULT_SETTINGS
+    // Settings saved before the guide existed belong to an existing user, who skips it.
+    return raw ? { ...defaults, onboardingDone: true, ...(JSON.parse(raw) as Partial<AppSettings>) } : defaults
   } catch {
-    return DEFAULT_SETTINGS
+    return defaults
   }
 }
 
@@ -62,9 +66,10 @@ function createId() {
 function App() {
   const [activities, setActivities] = useState<Activity[]>(loadActivities)
   const [goals, setGoals] = useState<Goal[]>(loadGoals)
-  const [user, setUser] = useState<User | null>(loadUser)
   const [settings, setSettings] = useState<AppSettings>(loadSettings)
   const [activePage, setActivePage] = useState<PageId>('overview')
+  // Where the gear button returns to when Settings is closed again.
+  const [pageBeforeSettings, setPageBeforeSettings] = useState<PageId>('overview')
   const [celebration, setCelebration] = useState<CelebrationData | null>(null)
 
   useEffect(() => {
@@ -76,15 +81,8 @@ function App() {
   }, [goals])
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(user))
-    } else {
-      localStorage.removeItem(USER_STORAGE_KEY)
-    }
-  }, [user])
-
-  useEffect(() => {
     localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings))
+    localStorage.removeItem(LEGACY_USER_STORAGE_KEY)
   }, [settings])
 
   useEffect(() => {
@@ -165,8 +163,33 @@ function App() {
     setGoals((prev) => prev.filter((g) => g.id !== goalId))
   }
 
-  if (!user) {
-    return <LoginPage onLogin={setUser} />
+  // The gear works as a toggle: open Settings, or go back to the page it was opened from.
+  // Settings save as they change, so leaving needs no confirm step.
+  function handleToggleSettings() {
+    if (activePage === 'settings') {
+      setActivePage(pageBeforeSettings)
+    } else {
+      setPageBeforeSettings(activePage)
+      setActivePage('settings')
+    }
+  }
+
+  function handleCompleteOnboarding(result: OnboardingResult) {
+    setActivities((prev) => [...prev, ...result.activities])
+    setGoals((prev) => [...prev, ...result.goals])
+    setSettings((prev) => ({ ...prev, name: result.name, onboardingDone: true }))
+    setActivePage('overview')
+  }
+
+  if (!settings.onboardingDone) {
+    return (
+      <OnboardingPage
+        settings={settings}
+        onUpdateSettings={setSettings}
+        onComplete={handleCompleteOnboarding}
+        onSkip={() => setSettings((prev) => ({ ...prev, onboardingDone: true }))}
+      />
+    )
   }
 
   return (
@@ -174,9 +197,8 @@ function App() {
     <Layout
       activePage={activePage}
       onNavigate={setActivePage}
-      user={user}
-      onLogout={() => setUser(null)}
-      onOpenSettings={() => setActivePage('settings')}
+      userName={settings.name.trim()}
+      onToggleSettings={handleToggleSettings}
     >
       {activePage === 'overview' && (
         <OverviewPage
@@ -202,7 +224,7 @@ function App() {
         />
       )}
       {activePage === 'settings' && (
-        <SettingsPage user={user} settings={settings} onUpdateUser={setUser} onUpdateSettings={setSettings} />
+        <SettingsPage settings={settings} onUpdateSettings={setSettings} />
       )}
     </Layout>
     {celebration && (

@@ -31,17 +31,15 @@ export interface Goal {
 
 export type NewGoal = Omit<Goal, 'id'>
 
-export interface User {
-  name: string
-  email: string
-}
-
 export type Language = 'sv' | 'en'
 
 export type Theme = 'dark' | 'light'
 
 export interface AppSettings {
+  name: string
   hourStepMinutes: number
   language: Language
   theme: Theme
+  // False until the first-run guide is saved or skipped.
+  onboardingDone: boolean
 }

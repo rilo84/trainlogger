@@ -5,11 +5,8 @@
     "close": "Stäng",
     "delete": "Ta bort",
     "save": "Spara",
-    "logout": "Logga ut",
     "settings": "Inställningar",
     "install": "Installera appen",
-    "name": "Namn",
-    "email": "E-post",
     "week": "vecka",
     "month": "månad",
     "perWeek": "Per vecka",
@@ -22,16 +19,6 @@
     "overview": "Översikt",
     "activities": "Aktiviteter",
     "goals": "Mål"
-  },
-  "login": {
-    "subtitle": "Logga in för att komma till dina aktiviteter",
-    "googleButton": "Logga in med Google",
-    "comingSoon": "Kopplas in senare",
-    "or": "eller",
-    "namePlaceholder": "Ditt namn",
-    "emailPlaceholder": "din@epost.se",
-    "submit": "Logga in",
-    "note": "Tillfällig inloggning — riktig autentisering kopplas in senare."
   },
   "overview": {
     "noActivities": "Inga aktiviteter tillagda än",
@@ -163,10 +150,9 @@
   },
   "settingsPage": {
     "title": "Inställningar",
-    "subtitle": "Din profil och appens inställningar",
-    "profileTitle": "Profil",
-    "saveProfile": "Spara profil",
-    "savedConfirm": "Sparat ✓",
+    "subtitle": "Appens inställningar",
+    "nameTitle": "Namn",
+    "namePlaceholder": "Ditt namn",
     "precisionTitle": "Tidsprecision",
     "precisionHint": "Hur exakt du kan välja timmar i rullhjulen när du loggar",
     "themeTitle": "Utseende",
@@ -180,5 +166,36 @@
     "updateAvailable": "En ny version finns tillgänglig",
     "reload": "Uppdatera",
     "dismiss": "Inte nu"
+  },
+  "onboarding": {
+    "skip": "Hoppa över",
+    "skipTitle": "Hoppa över guiden?",
+    "skipWarning": "Det du fyllt i hittills sparas inte. Du kan lägga till aktiviteter och mål senare.",
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "finish": "Spara och kom igång",
+    "stepOf": "Steg {{current}} av {{total}}",
+    "steps": {
+      "profile": "Profil",
+      "activities": "Aktiviteter",
+      "goals": "Mål",
+      "summary": "Sammanfattning"
+    },
+    "profileTitle": "Välkommen till Treni!",
+    "profileIntro": "Vi börjar med några grundinställningar. Tema och språk ändras direkt så att du ser hur det blir.",
+    "nameLabel": "Vad heter du?",
+    "themeLabel": "Färgtema",
+    "languageLabel": "Språk",
+    "activitiesTitle": "Vad tränar du?",
+    "activitiesIntro": "Lägg till de aktiviteter du vill logga tid för, t.ex. löpning eller styrka. Du kan alltid lägga till fler senare.",
+    "activitiesEmpty": "Inga aktiviteter tillagda än.",
+    "goalsTitle": "Sätt upp dina mål",
+    "goalsIntro": "Hur mycket vill du träna? Sätt ett totalt mål för alla aktiviteter eller ett per aktivitet. Du kan också vänta med det här.",
+    "goalsEmpty": "Inga mål tillagda än.",
+    "summaryTitle": "Ser det bra ut?",
+    "summaryIntro": "Här är dina val. Spara för att komma igång, eller gå tillbaka och ändra.",
+    "edit": "Ändra",
+    "notSet": "Inte angivet",
+    "noneAdded": "Inga tillagda"
   }
 }

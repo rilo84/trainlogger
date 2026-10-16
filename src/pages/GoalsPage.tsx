@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Activity, AppSettings, Goal, NewGoal } from '../types'
-import { formatMonthName } from '../utils'
 import { AddGoalForm } from '../components/AddGoalForm'
 import { ConfirmDialog } from '../components/ConfirmDialog'
+import { GoalDescription } from '../components/GoalDescription'
 
 interface GoalsPageProps {
   activities: Activity[]
@@ -15,7 +15,7 @@ interface GoalsPageProps {
 }
 
 export function GoalsPage({ activities, goals, settings, onAdd, onUpdate, onDelete }: GoalsPageProps) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const nameById = new Map(activities.map((a) => [a.id, a.name]))
 
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null)
@@ -67,27 +67,7 @@ export function GoalsPage({ activities, goals, settings, onAdd, onUpdate, onDele
                   aria-label={t('goals.editAria')}
                   onClick={() => setEditingGoalId((cur) => (cur === goal.id ? null : goal.id))}
                 >
-                  <div className="list-row-title">
-                    {goal.activityId === null
-                      ? t('goals.allActivities')
-                      : (nameById.get(goal.activityId) ?? t('goals.deletedActivity'))}
-                  </div>
-                  <div className="list-row-subtitle">
-                    {t('goals.targetPerPeriod', {
-                      hours: goal.targetHours,
-                      period: goal.period === 'week' ? t('common.week') : t('common.month'),
-                    })}
-                    {goal.weekStart != null && goal.weekEnd != null && (
-                      <> · {t('goals.weekRange', { from: goal.weekStart, to: goal.weekEnd })}</>
-                    )}
-                    {goal.monthStart != null && goal.monthEnd != null && (
-                      <>
-                        {' · '}
-                        {formatMonthName(goal.monthStart, i18n.language, 'short')}–
-                        {formatMonthName(goal.monthEnd, i18n.language, 'short')}
-                      </>
-                    )}
-                  </div>
+                  <GoalDescription goal={goal} nameById={nameById} />
                 </button>
                 <button
                   className="btn-icon"

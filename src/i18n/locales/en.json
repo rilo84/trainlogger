@@ -5,11 +5,8 @@
     "close": "Close",
     "delete": "Delete",
     "save": "Save",
-    "logout": "Log out",
     "settings": "Settings",
     "install": "Install app",
-    "name": "Name",
-    "email": "Email",
     "week": "week",
     "month": "month",
     "perWeek": "Weekly",
@@ -22,16 +19,6 @@
     "overview": "Overview",
     "activities": "Activities",
     "goals": "Goals"
-  },
-  "login": {
-    "subtitle": "Log in to get to your activities",
-    "googleButton": "Sign in with Google",
-    "comingSoon": "Coming soon",
-    "or": "or",
-    "namePlaceholder": "Your name",
-    "emailPlaceholder": "you@email.com",
-    "submit": "Log in",
-    "note": "Temporary login — real authentication is coming later."
   },
   "overview": {
     "noActivities": "No activities added yet",
@@ -163,10 +150,9 @@
   },
   "settingsPage": {
     "title": "Settings",
-    "subtitle": "Your profile and the app's settings",
-    "profileTitle": "Profile",
-    "saveProfile": "Save profile",
-    "savedConfirm": "Saved ✓",
+    "subtitle": "App settings",
+    "nameTitle": "Name",
+    "namePlaceholder": "Your name",
     "precisionTitle": "Time precision",
     "precisionHint": "How precisely you can pick hours in the wheel pickers when logging",
     "themeTitle": "Appearance",
@@ -180,5 +166,36 @@
     "updateAvailable": "A new version is available",
     "reload": "Update",
     "dismiss": "Not now"
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "skipTitle": "Skip the guide?",
+    "skipWarning": "What you have filled in so far will not be saved. You can add activities and goals later.",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Save and get started",
+    "stepOf": "Step {{current}} of {{total}}",
+    "steps": {
+      "profile": "Profile",
+      "activities": "Activities",
+      "goals": "Goals",
+      "summary": "Summary"
+    },
+    "profileTitle": "Welcome to Treni!",
+    "profileIntro": "Let's start with a few basics. Theme and language change right away so you can see how they look.",
+    "nameLabel": "What's your name?",
+    "themeLabel": "Colour theme",
+    "languageLabel": "Language",
+    "activitiesTitle": "What do you train?",
+    "activitiesIntro": "Add the activities you want to log time for, e.g. running or strength. You can always add more later.",
+    "activitiesEmpty": "No activities added yet.",
+    "goalsTitle": "Set your goals",
+    "goalsIntro": "How much do you want to train? Set a total goal across all activities or one per activity. You can also do this later.",
+    "goalsEmpty": "No goals added yet.",
+    "summaryTitle": "Look good?",
+    "summaryIntro": "Here are your choices. Save to get started, or go back and change something.",
+    "edit": "Edit",
+    "notSet": "Not set",
+    "noneAdded": "None added"
   }
 }

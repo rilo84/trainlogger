@@ -88,7 +88,7 @@ export function LogActivityForm({
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary login-submit">
+          <button type="submit" className="btn btn-primary form-submit">
             {t('logActivity.submit')}
           </button>
         </form>

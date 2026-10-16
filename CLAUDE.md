@@ -18,16 +18,18 @@ A single-page React 19 + TypeScript app built with Vite, packaged as an installa
 
 `src/components/PwaUpdatePrompt.tsx` (mounted alongside `<App />` in `main.tsx`) uses `useRegisterSW` from `virtual:pwa-register/react`. Because the SW is registered in `prompt` mode, a newly deployed service worker installs but waits; the component shows a toast (`.pwa-toast`) and only calls `updateServiceWorker(true)` — which triggers `skipWaiting` + reload — when the user confirms. It also polls `registration.update()` hourly and on tab focus/visibility so a long-lived installed session notices deploys. Type references for the virtual module are in `src/vite-env.d.ts`.
 
-**No backend, no real authentication.** Everything runs client-side. `LoginPage` simply constructs a `User` object (name + email) and stores it; presence of that object is the only gate on the rest of the app.
+**No backend, no authentication.** Everything runs client-side; the app opens straight to the overview. The gear icon (`SettingsIcon`) in the sidebar footer / mobile header opens the Settings page (name, theme, language, time precision). The optional display name lives in `settings.name` and is shown in the sidebar footer; on first load it is migrated from the legacy `claudetrainer.user` key, which is then removed.
+
+**First-run guide.** While `settings.onboardingDone` is false, `App.tsx` renders `OnboardingPage` instead of `Layout`: a 4-step wizard (profile → activities → goals → summary) with back/next and a step indicator. Theme and language apply immediately via `onUpdateSettings`; name, activities and goals are a local draft (reusing `AddActivityForm`/`AddGoalForm`) handed to `handleCompleteOnboarding` only on the final save. Skipping just sets the flag. Settings saved before the flag existed load as `onboardingDone: true`, so existing users never see it.
 
 ### State and persistence
 
-All application state lives in `src/App.tsx` as four `useState` hooks: `activities`, `goals`, `user`, `settings`. Each is:
+All application state lives in `src/App.tsx` as three `useState` hooks: `activities`, `goals`, `settings`. Each is:
 
 - initialized lazily from `localStorage` via a `load*` function that returns a default on any parse error, and
 - written back to `localStorage` by a dedicated `useEffect` whenever it changes.
 
-Storage keys are `claudetrainer.activities`, `claudetrainer.goals`, `claudetrainer.user`, `claudetrainer.settings`. Mutations are plain immutable-update handler functions in `App.tsx` (`handleAddActivity`, `handleLogHours`, `handleAddGoal`, …) passed down as props. IDs come from `crypto.randomUUID()`. There is no state library and no context — props are threaded explicitly. Deleting an activity also cascades to delete its goals.
+Storage keys are `claudetrainer.activities`, `claudetrainer.goals`, `claudetrainer.settings`. Mutations are plain immutable-update handler functions in `App.tsx` (`handleAddActivity`, `handleLogHours`, `handleAddGoal`, …) passed down as props. IDs come from `crypto.randomUUID()`. There is no state library and no context — props are threaded explicitly. Deleting an activity also cascades to delete its goals.
 
 ### Navigation
 
